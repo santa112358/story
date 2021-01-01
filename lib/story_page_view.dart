@@ -26,12 +26,12 @@ class _StoryPageViewState extends State<StoryPageView> {
     return Scaffold(
       body: PageView.builder(
         controller: pageController,
-        itemCount: 4,
+        itemCount: 2,
         itemBuilder: (context, index) {
           return StoryPageFrame.wrapped(
             pageController: pageController,
-            pageLength: 4,
-            stackLength: 5,
+            pageLength: 2,
+            stackLength: 3,
             pageIndex: index,
             jumpPage: (index) {
               pageController.jumpToPage(index);
@@ -44,9 +44,13 @@ class _StoryPageViewState extends State<StoryPageView> {
 }
 
 class StoryPageFrame extends StatefulWidget {
-  const StoryPageFrame._({Key key, @required this.stackLength})
-      : super(key: key);
+  const StoryPageFrame._({
+    Key key,
+    @required this.stackLength,
+    @required this.pageIndex,
+  }) : super(key: key);
   final int stackLength;
+  final int pageIndex;
 
   static Widget wrapped({
     @required int pageIndex,
@@ -77,7 +81,10 @@ class StoryPageFrame extends StatefulWidget {
           ),
         ),
       ],
-      child: StoryPageFrame._(stackLength: stackLength),
+      child: StoryPageFrame._(
+        stackLength: stackLength,
+        pageIndex: pageIndex,
+      ),
     );
   }
 
@@ -105,20 +112,34 @@ class _StoryPageFrameState extends State<StoryPageFrame>
       fit: StackFit.loose,
       alignment: Alignment.topLeft,
       children: [
-        Indicators(
-          stackLength: widget.stackLength,
-          animationController: animationController,
-        ),
         IndexedStack(
           index: context.watch<StoryStackController>().value,
           children: List.generate(
             context.watch<StoryStackController>().value + 1,
-            (index) => Center(
-              child: Text(
-                index.toString(),
+            (index) => Container(
+              color: (widget.pageIndex == 0) ? Colors.grey : Colors.transparent,
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "pageIndex: ${widget.pageIndex.toString()}",
+                      style: TextStyle(fontSize: 24),
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      "stackIndex: ${index.toString()}",
+                      style: TextStyle(fontSize: 24),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
+        ),
+        Indicators(
+          stackLength: widget.stackLength,
+          animationController: animationController,
         ),
         Gestures(
           animationController: animationController,
@@ -128,7 +149,7 @@ class _StoryPageFrameState extends State<StoryPageFrame>
   }
 
   @override
-  bool get wantKeepAlive => true;
+  bool get wantKeepAlive => false;
 }
 
 class Gestures extends StatelessWidget {
@@ -148,8 +169,7 @@ class Gestures extends StatelessWidget {
             color: Colors.transparent,
             child: GestureDetector(
               onTap: () {
-                animationController.reset();
-                animationController.forward();
+                animationController.forward(from: 0);
                 context
                     .read<StoryStackController>()
                     .decrement(stopAnimation: () => animationController.stop());
@@ -168,8 +188,7 @@ class Gestures extends StatelessWidget {
             color: Colors.transparent,
             child: GestureDetector(
               onTap: () {
-                animationController.reset();
-                animationController.forward();
+                animationController.forward(from: 0);
                 context
                     .read<StoryStackController>()
                     .increment(stopAnimation: () => animationController.stop());

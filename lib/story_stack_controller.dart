@@ -17,7 +17,7 @@ class StoryStackController extends ValueNotifier<int> {
   void increment({VoidCallback stopAnimation}) {
     if (value == limitIndex) {
       onPageForward?.call();
-      stopAnimation?.call();
+      // stopAnimation?.call();
     } else {
       value++;
     }
@@ -26,7 +26,7 @@ class StoryStackController extends ValueNotifier<int> {
   void decrement({VoidCallback stopAnimation}) {
     if (value == 0) {
       onPageBack?.call();
-      stopAnimation?.call();
+      //   stopAnimation?.call();
     } else {
       value--;
     }
