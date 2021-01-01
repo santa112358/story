@@ -1,6 +1,6 @@
+import 'dart:math';
 import 'dart:ui';
 
-import 'package:cube_transition/cube_transition.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -19,6 +19,7 @@ class _StoryPageViewState extends State<StoryPageView> {
   PageController pageController;
 
   var currentPageValue = 0.0;
+  var currentPageIndex;
 
   @override
   void initState() {
@@ -42,28 +43,31 @@ class _StoryPageViewState extends State<StoryPageView> {
           final isLeaving = (index - currentPageValue) <= 0;
           final t = (index - currentPageValue);
           final rotationY = lerpDouble(0, 15, t);
-          final opacity = lerpDouble(0, 1, t.abs()).clamp(0.0, 1.0);
-          final paging = opacity != 0;
+          final maxOpacity = 0.8;
+          final opacity =
+              lerpDouble(0, maxOpacity, t.abs()).clamp(0.0, maxOpacity);
+          final paging = opacity != maxOpacity;
           final transform = Matrix4.identity();
           transform.setEntry(3, 2, 0.003);
-          transform.rotateY(-degToRad(rotationY));
+          transform.rotateY(-rotationY * (pi / 180.0));
           return Transform(
             alignment: isLeaving ? Alignment.centerRight : Alignment.centerLeft,
             transform: transform,
             child: Stack(
               children: [
                 StoryPageFrame.wrapped(
-                  pageController: pageController,
                   pageLength: 2,
                   stackLength: 3,
                   pageIndex: index,
-                  jumpPage: (index) {
+                  animateToPage: (index) {
                     pageController.animateToPage(index,
                         duration: Duration(milliseconds: 500),
                         curve: Curves.ease);
                   },
+                  isCurrentPage: currentPageValue == index,
+                  paging: paging,
                 ),
-                if (paging)
+                if (paging && !isLeaving)
                   Positioned.fill(
                     child: Opacity(
                       opacity: opacity,
@@ -75,15 +79,6 @@ class _StoryPageViewState extends State<StoryPageView> {
               ],
             ),
           );
-          // return StoryPageFrame.wrapped(
-          //   pageController: pageController,
-          //   pageLength: 2,
-          //   stackLength: 3,
-          //   pageIndex: index,
-          //   jumpPage: (index) {
-          //     pageController.jumpToPage(index);
-          //   },
-          // );
         },
       ),
     );
@@ -95,16 +90,21 @@ class StoryPageFrame extends StatefulWidget {
     Key key,
     @required this.stackLength,
     @required this.pageIndex,
+    @required this.isCurrentPage,
+    @required this.paging,
   }) : super(key: key);
   final int stackLength;
   final int pageIndex;
+  final bool isCurrentPage;
+  final bool paging;
 
   static Widget wrapped({
     @required int pageIndex,
     @required int pageLength,
-    @required PageController pageController,
-    @required ValueChanged<int> jumpPage,
+    @required ValueChanged<int> animateToPage,
     @required int stackLength,
+    @required bool isCurrentPage,
+    @required bool paging,
   }) {
     return MultiProvider(
       providers: [
@@ -115,14 +115,14 @@ class StoryPageFrame extends StatefulWidget {
               if (pageIndex == 0) {
                 print("reach 0");
               } else {
-                jumpPage(pageIndex - 1);
+                animateToPage(pageIndex - 1);
               }
             },
             onPageForward: () {
               if (pageIndex == pageLength - 1) {
                 print("reach limit");
               } else {
-                jumpPage(pageIndex + 1);
+                animateToPage(pageIndex + 1);
               }
             },
           ),
@@ -131,6 +131,8 @@ class StoryPageFrame extends StatefulWidget {
       child: StoryPageFrame._(
         stackLength: stackLength,
         pageIndex: pageIndex,
+        isCurrentPage: isCurrentPage,
+        paging: paging,
       ),
     );
   }
@@ -201,6 +203,8 @@ class _StoryPageFrameState extends State<StoryPageFrame>
         Indicators(
           stackLength: widget.stackLength,
           animationController: animationController,
+          isCurrentPage: widget.isCurrentPage,
+          paging: widget.paging,
         ),
         Gestures(
           animationController: animationController,
@@ -210,7 +214,7 @@ class _StoryPageFrameState extends State<StoryPageFrame>
   }
 
   @override
-  bool get wantKeepAlive => false;
+  bool get wantKeepAlive => true;
 }
 
 class Gestures extends StatelessWidget {
@@ -272,9 +276,13 @@ class Indicators extends StatefulWidget {
     Key key,
     @required this.animationController,
     @required this.stackLength,
+    @required this.isCurrentPage,
+    @required this.paging,
   }) : super(key: key);
   final int stackLength;
   final AnimationController animationController;
+  final bool isCurrentPage;
+  final bool paging;
 
   @override
   _IndicatorsState createState() => _IndicatorsState();
@@ -305,7 +313,18 @@ class _IndicatorsState extends State<Indicators> {
 
   @override
   Widget build(BuildContext context) {
-    final currentIndex = context.watch<StoryStackController>().value;
+    final currentStackIndex = context.watch<StoryStackController>().value;
+    if (!widget.isCurrentPage && widget.paging) {
+      widget.animationController.stop();
+    }
+    if (!widget.isCurrentPage &&
+        !widget.paging &&
+        widget.animationController.value != 0) {
+      widget.animationController.value = 0;
+    }
+    if (widget.isCurrentPage && !widget.animationController.isAnimating) {
+      widget.animationController.forward(from: 0);
+    }
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 8),
       child: Row(
@@ -315,9 +334,9 @@ class _IndicatorsState extends State<Indicators> {
           widget.stackLength,
           (index) => _Indicator(
             index: index,
-            value: (index == currentIndex)
+            value: (index == currentStackIndex)
                 ? indicatorAnimation.value
-                : (index > currentIndex)
+                : (index > currentStackIndex)
                     ? 0
                     : 1,
           ),

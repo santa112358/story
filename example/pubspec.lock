@@ -43,13 +43,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.15.0-nullsafety.3"
-  cube_transition:
-    dependency: transitive
-    description:
-      name: cube_transition
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.0.2"
   cupertino_icons:
     dependency: "direct main"
     description:
@@ -177,13 +170,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.0-nullsafety.3"
-  vsync_provider:
-    dependency: transitive
-    description:
-      name: vsync_provider
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.4.1"
 sdks:
   dart: ">=2.10.0-110 <2.11.0"
   flutter: ">=1.16.0"
