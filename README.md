@@ -1,12 +1,15 @@
 # story
 
+[![pub package](https://img.shields.io/pub/v/story.svg)](https://pub.dev/packages/story)
+<a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/license-MIT-purple.svg" alt="License: MIT"></a>
+
 Instagram story like UI with rich animations and customizability.
 
 ![final 2](https://user-images.githubusercontent.com/43510799/103445017-8e497300-4cb2-11eb-8bed-97a7d98461da.gif)
 
 ## Usage
 
-`StoryPageView` needs at least three arguments: `itemBuilder`, `pageLength`, `stackLength`
+`StoryPageView` needs at least three arguments: `itemBuilder`, `pageLength`, and `stackLength`.
 ```dart
 /// Minimum example to explain the usage.
 return Scaffold(
@@ -85,7 +88,7 @@ return Scaffold(
 );
 ```
 
-- It is recommended to use data model with two layers. In this case, `UserModel` which has the list of 'StoryModel'
+- It is recommended to use data model with two layers. In this case, `UserModel` which has the list of `StoryModel`
 
 ```dart
 /// Example Data Model
