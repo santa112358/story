@@ -9,8 +9,6 @@ import 'package:story/story_stack_controller.dart';
 typedef StoryItemBuilder = Widget Function(
     BuildContext context, int pageIndex, int stackIndex);
 
-const defaultDuration = const Duration(milliseconds: 500);
-
 class StoryPageView extends StatefulWidget {
   StoryPageView({
     Key key,
@@ -19,16 +17,22 @@ class StoryPageView extends StatefulWidget {
     @required this.pageLength,
     this.initialPage = 0,
     this.onPageLimitReached,
+    this.indicatorDuration = const Duration(seconds: 5),
+    this.indicatorPadding =
+        const EdgeInsets.symmetric(vertical: 32, horizontal: 8),
   })  : assert(pageLength != null),
         assert(stackLength != null),
         assert(itemBuilder != null),
         super(key: key);
 
-  final int initialPage;
-  final int pageLength;
-  final VoidCallback onPageLimitReached;
   final StoryItemBuilder itemBuilder;
   final int Function(int pageIndex) stackLength;
+  final int pageLength;
+
+  final EdgeInsetsGeometry indicatorPadding;
+  final Duration indicatorDuration;
+  final VoidCallback onPageLimitReached;
+  final int initialPage;
 
   @override
   _StoryPageViewState createState() => _StoryPageViewState();
@@ -65,7 +69,7 @@ class _StoryPageViewState extends State<StoryPageView> {
           final maxOpacity = 0.8;
           final opacity =
               lerpDouble(0, maxOpacity, t.abs()).clamp(0.0, maxOpacity);
-          final paging = opacity != maxOpacity;
+          final isPaging = opacity != maxOpacity;
           final transform = Matrix4.identity();
           transform.setEntry(3, 2, 0.003);
           transform.rotateY(-rotationY * (pi / 180.0));
@@ -84,11 +88,13 @@ class _StoryPageViewState extends State<StoryPageView> {
                         curve: Curves.ease);
                   },
                   isCurrentPage: currentPageValue == index,
-                  paging: paging,
+                  isPaging: isPaging,
                   onPageLimitReached: widget.onPageLimitReached,
                   itemBuilder: widget.itemBuilder,
+                  indicatorDuration: widget.indicatorDuration,
+                  indicatorPadding: widget.indicatorPadding,
                 ),
-                if (paging && !isLeaving)
+                if (isPaging && !isLeaving)
                   Positioned.fill(
                     child: Opacity(
                       opacity: opacity,
@@ -112,14 +118,18 @@ class StoryPageFrame extends StatefulWidget {
     @required this.stackLength,
     @required this.pageIndex,
     @required this.isCurrentPage,
-    @required this.paging,
+    @required this.isPaging,
     @required this.itemBuilder,
+    @required this.indicatorDuration,
+    @required this.indicatorPadding,
   }) : super(key: key);
   final int stackLength;
   final int pageIndex;
   final bool isCurrentPage;
-  final bool paging;
+  final bool isPaging;
   final StoryItemBuilder itemBuilder;
+  final Duration indicatorDuration;
+  final EdgeInsetsGeometry indicatorPadding;
 
   static Widget wrapped({
     @required int pageIndex,
@@ -127,9 +137,11 @@ class StoryPageFrame extends StatefulWidget {
     @required ValueChanged<int> animateToPage,
     @required int stackLength,
     @required bool isCurrentPage,
-    @required bool paging,
+    @required bool isPaging,
     @required VoidCallback onPageLimitReached,
     @required StoryItemBuilder itemBuilder,
+    @required Duration indicatorDuration,
+    @required EdgeInsetsGeometry indicatorPadding,
   }) {
     return MultiProvider(
       providers: [
@@ -155,8 +167,10 @@ class StoryPageFrame extends StatefulWidget {
         stackLength: stackLength,
         pageIndex: pageIndex,
         isCurrentPage: isCurrentPage,
-        paging: paging,
+        isPaging: isPaging,
         itemBuilder: itemBuilder,
+        indicatorDuration: indicatorDuration,
+        indicatorPadding: indicatorPadding,
       ),
     );
   }
@@ -174,8 +188,10 @@ class _StoryPageFrameState extends State<StoryPageFrame>
   @override
   void initState() {
     super.initState();
-    animationController =
-        AnimationController(vsync: this, duration: Duration(seconds: 5));
+    animationController = AnimationController(
+      vsync: this,
+      duration: widget.indicatorDuration ?? Duration(seconds: 5),
+    );
   }
 
   @override
@@ -187,13 +203,15 @@ class _StoryPageFrameState extends State<StoryPageFrame>
       children: [
         Positioned.fill(
           child: ColoredBox(
-            color: Colors.white, //Theme.of(context).scaffoldBackgroundColor,
+            color: Theme.of(context).scaffoldBackgroundColor,
           ),
         ),
-        widget.itemBuilder(
-          context,
-          widget.pageIndex,
-          context.watch<StoryStackController>().value,
+        Positioned.fill(
+          child: widget.itemBuilder(
+            context,
+            widget.pageIndex,
+            context.watch<StoryStackController>().value,
+          ),
         ),
         Container(
           height: 50,
@@ -211,7 +229,8 @@ class _StoryPageFrameState extends State<StoryPageFrame>
           stackLength: widget.stackLength,
           animationController: animationController,
           isCurrentPage: widget.isCurrentPage,
-          paging: widget.paging,
+          isPaging: widget.isPaging,
+          padding: widget.indicatorPadding,
         ),
         Gestures(
           animationController: animationController,
@@ -284,12 +303,14 @@ class Indicators extends StatefulWidget {
     @required this.animationController,
     @required this.stackLength,
     @required this.isCurrentPage,
-    @required this.paging,
+    @required this.isPaging,
+    @required this.padding,
   }) : super(key: key);
   final int stackLength;
   final AnimationController animationController;
+  final EdgeInsetsGeometry padding;
   final bool isCurrentPage;
-  final bool paging;
+  final bool isPaging;
 
   @override
   _IndicatorsState createState() => _IndicatorsState();
@@ -321,11 +342,11 @@ class _IndicatorsState extends State<Indicators> {
   @override
   Widget build(BuildContext context) {
     final currentStackIndex = context.watch<StoryStackController>().value;
-    if (!widget.isCurrentPage && widget.paging) {
+    if (!widget.isCurrentPage && widget.isPaging) {
       widget.animationController.stop();
     }
     if (!widget.isCurrentPage &&
-        !widget.paging &&
+        !widget.isPaging &&
         widget.animationController.value != 0) {
       widget.animationController.value = 0;
     }
@@ -333,7 +354,7 @@ class _IndicatorsState extends State<Indicators> {
       widget.animationController.forward(from: 0);
     }
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 8),
+      padding: widget.padding,
       child: Row(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
