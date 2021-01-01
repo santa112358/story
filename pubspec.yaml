@@ -13,6 +13,7 @@ dependencies:
     sdk: flutter
   provider:
   vsync_provider:
+  cube_transition: ^1.0.2
 
 dev_dependencies:
   flutter_test:

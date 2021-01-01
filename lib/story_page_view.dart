@@ -1,3 +1,6 @@
+import 'dart:ui';
+
+import 'package:cube_transition/cube_transition.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -15,28 +18,72 @@ class StoryPageView extends StatefulWidget {
 class _StoryPageViewState extends State<StoryPageView> {
   PageController pageController;
 
+  var currentPageValue = 0.0;
+
   @override
   void initState() {
     super.initState();
     pageController = PageController(initialPage: widget.initialPage);
+    pageController.addListener(() {
+      setState(() {
+        currentPageValue = pageController.page;
+      });
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.black,
       body: PageView.builder(
         controller: pageController,
         itemCount: 2,
         itemBuilder: (context, index) {
-          return StoryPageFrame.wrapped(
-            pageController: pageController,
-            pageLength: 2,
-            stackLength: 3,
-            pageIndex: index,
-            jumpPage: (index) {
-              pageController.jumpToPage(index);
-            },
+          final isLeaving = (index - currentPageValue) <= 0;
+          final t = (index - currentPageValue);
+          final rotationY = lerpDouble(0, 15, t);
+          final opacity = lerpDouble(0, 1, t.abs()).clamp(0.0, 1.0);
+          final paging = opacity != 0;
+          final transform = Matrix4.identity();
+          transform.setEntry(3, 2, 0.003);
+          transform.rotateY(-degToRad(rotationY));
+          return Transform(
+            alignment: isLeaving ? Alignment.centerRight : Alignment.centerLeft,
+            transform: transform,
+            child: Stack(
+              children: [
+                StoryPageFrame.wrapped(
+                  pageController: pageController,
+                  pageLength: 2,
+                  stackLength: 3,
+                  pageIndex: index,
+                  jumpPage: (index) {
+                    pageController.animateToPage(index,
+                        duration: Duration(milliseconds: 500),
+                        curve: Curves.ease);
+                  },
+                ),
+                if (paging)
+                  Positioned.fill(
+                    child: Opacity(
+                      opacity: opacity,
+                      child: ColoredBox(
+                        color: Colors.black87,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
           );
+          // return StoryPageFrame.wrapped(
+          //   pageController: pageController,
+          //   pageLength: 2,
+          //   stackLength: 3,
+          //   pageIndex: index,
+          //   jumpPage: (index) {
+          //     pageController.jumpToPage(index);
+          //   },
+          // );
         },
       ),
     );
@@ -112,29 +159,43 @@ class _StoryPageFrameState extends State<StoryPageFrame>
       fit: StackFit.loose,
       alignment: Alignment.topLeft,
       children: [
+        Positioned.fill(
+          child: ColoredBox(
+            color: Colors.white, //Theme.of(context).scaffoldBackgroundColor,
+          ),
+        ),
         IndexedStack(
           index: context.watch<StoryStackController>().value,
           children: List.generate(
             context.watch<StoryStackController>().value + 1,
-            (index) => Container(
-              color: (widget.pageIndex == 0) ? Colors.grey : Colors.transparent,
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      "pageIndex: ${widget.pageIndex.toString()}",
-                      style: TextStyle(fontSize: 24),
-                    ),
-                    const SizedBox(height: 12),
-                    Text(
-                      "stackIndex: ${index.toString()}",
-                      style: TextStyle(fontSize: 24),
-                    ),
-                  ],
-                ),
+            (index) => Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    "pageIndex: ${widget.pageIndex.toString()}",
+                    style: TextStyle(fontSize: 24),
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    "stackIndex: ${index.toString()}",
+                    style: TextStyle(fontSize: 24),
+                  ),
+                ],
               ),
             ),
+          ),
+        ),
+        Container(
+          height: 50,
+          decoration: BoxDecoration(
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                spreadRadius: 10,
+                blurRadius: 20,
+              ),
+            ],
           ),
         ),
         Indicators(
@@ -286,7 +347,12 @@ class _Indicator extends StatelessWidget {
     return Expanded(
       child: Padding(
         padding: EdgeInsets.only(left: (index == 0) ? 0 : 4),
-        child: LinearProgressIndicator(value: value),
+        child: LinearProgressIndicator(
+          value: value,
+          backgroundColor: Colors.black.withOpacity(0.08),
+          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+          minHeight: 2,
+        ),
       ),
     );
   }
