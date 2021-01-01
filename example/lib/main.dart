@@ -113,6 +113,9 @@ class MyHomePage extends StatelessWidget {
         storyLength: (int pageIndex) {
           return sampleUsers[pageIndex].stories.length;
         },
+        onPageLimitReached: () {
+          /// Navigator.pop(context)
+        },
       ),
     );
   }
