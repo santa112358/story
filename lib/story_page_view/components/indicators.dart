@@ -8,12 +8,12 @@ class Indicators extends StatefulWidget {
   const Indicators({
     Key key,
     @required this.animationController,
-    @required this.stackLength,
+    @required this.storyLength,
     @required this.isCurrentPage,
     @required this.isPaging,
     @required this.padding,
   }) : super(key: key);
-  final int stackLength;
+  final int storyLength;
   final AnimationController animationController;
   final EdgeInsetsGeometry padding;
   final bool isCurrentPage;
@@ -66,7 +66,7 @@ class _IndicatorsState extends State<Indicators> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: List.generate(
-          widget.stackLength,
+          widget.storyLength,
           (index) => _Indicator(
             index: index,
             value: (index == currentStackIndex)

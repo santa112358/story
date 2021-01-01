@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:story/story_page_view.dart';
+import 'package:story/story_page_view/story_page_view.dart';
 
 void main() {
   runApp(MyApp());
@@ -110,7 +110,7 @@ class MyHomePage extends StatelessWidget {
           );
         },
         pageLength: sampleUsers.length,
-        stackLength: (int pageIndex) {
+        storyLength: (int pageIndex) {
           return sampleUsers[pageIndex].stories.length;
         },
       ),

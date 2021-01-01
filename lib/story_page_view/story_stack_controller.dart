@@ -4,16 +4,16 @@ import 'package:flutter/scheduler.dart';
 /// Notify current stack index
 class StoryStackController extends ValueNotifier<int> {
   StoryStackController({
-    @required this.stackLength,
+    @required this.storyLength,
     @required this.onPageForward,
     @required this.onPageBack,
     initialStackIndex = 0,
   }) : super(initialStackIndex);
-  final int stackLength;
+  final int storyLength;
   final VoidCallback onPageForward;
   final VoidCallback onPageBack;
 
-  int get limitIndex => stackLength - 1;
+  int get limitIndex => storyLength - 1;
 
   AnimationController animationController;
 
