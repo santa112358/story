@@ -6,8 +6,7 @@ Instagram story like UI with rich animations and customizability.
 ## Usage
 
 `StoryPageView` needs at least three arguments: `itemBuilder`, `pageLength`, `stackLength`
-
-
+![final 2](https://user-images.githubusercontent.com/43510799/103445017-8e497300-4cb2-11eb-8bed-97a7d98461da.gif)
 ```dart
 /// Minimum example to explain the usage.
 return Scaffold(

@@ -75,8 +75,15 @@ class MyHomePage extends StatelessWidget {
           final story = user.stories[stackIndex];
           return Stack(
             children: [
-              Positioned.fill(child: Container(color: Colors.black)),
-              Center(child: Image.network(story.imageUrl)),
+              Positioned.fill(
+                child: Container(color: Colors.black),
+              ),
+              Positioned.fill(
+                child: Image.network(
+                  story.imageUrl,
+                  fit: BoxFit.cover,
+                ),
+              ),
               Padding(
                 padding: const EdgeInsets.only(top: 44, left: 8),
                 child: Row(

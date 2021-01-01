@@ -93,7 +93,7 @@ class _StoryPageViewState extends State<StoryPageView> {
         itemBuilder: (context, index) {
           final isLeaving = (index - currentPageValue) <= 0;
           final t = (index - currentPageValue);
-          final rotationY = lerpDouble(0, 15, t);
+          final rotationY = lerpDouble(0, 30, t);
           final maxOpacity = 0.8;
           final opacity =
               lerpDouble(0, maxOpacity, t.abs()).clamp(0.0, maxOpacity);
