@@ -170,9 +170,7 @@ class Gestures extends StatelessWidget {
             child: GestureDetector(
               onTap: () {
                 animationController.forward(from: 0);
-                context
-                    .read<StoryStackController>()
-                    .decrement(stopAnimation: () => animationController.stop());
+                context.read<StoryStackController>().decrement();
               },
               onLongPress: () {
                 animationController.stop();
@@ -188,10 +186,11 @@ class Gestures extends StatelessWidget {
             color: Colors.transparent,
             child: GestureDetector(
               onTap: () {
-                animationController.forward(from: 0);
-                context
-                    .read<StoryStackController>()
-                    .increment(stopAnimation: () => animationController.stop());
+                context.read<StoryStackController>().increment(
+                      restartAnimation: () =>
+                          animationController.forward(from: 0),
+                      completeAnimation: () => animationController.value = 1,
+                    );
               },
               onLongPress: () {
                 animationController.stop();
@@ -235,8 +234,9 @@ class _IndicatorsState extends State<Indicators> {
           ..addStatusListener(
             (status) {
               if (status == AnimationStatus.completed) {
-                context.read<StoryStackController>().increment();
-                widget.animationController.forward(from: 0);
+                context.read<StoryStackController>().increment(
+                    restartAnimation: () =>
+                        widget.animationController.forward(from: 0));
               }
             },
           );
