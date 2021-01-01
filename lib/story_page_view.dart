@@ -6,10 +6,29 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:story/story_stack_controller.dart';
 
-class StoryPageView extends StatefulWidget {
-  StoryPageView({Key key, this.initialPage = 0}) : super(key: key);
+typedef StoryItemBuilder = Widget Function(
+    BuildContext context, int pageIndex, int stackIndex);
 
-  final initialPage;
+const defaultDuration = const Duration(milliseconds: 500);
+
+class StoryPageView extends StatefulWidget {
+  StoryPageView({
+    Key key,
+    @required this.itemBuilder,
+    @required this.stackLength,
+    @required this.pageLength,
+    this.initialPage = 0,
+    this.onPageLimitReached,
+  })  : assert(pageLength != null),
+        assert(stackLength != null),
+        assert(itemBuilder != null),
+        super(key: key);
+
+  final int initialPage;
+  final int pageLength;
+  final VoidCallback onPageLimitReached;
+  final StoryItemBuilder itemBuilder;
+  final int Function(int pageIndex) stackLength;
 
   @override
   _StoryPageViewState createState() => _StoryPageViewState();
@@ -38,7 +57,7 @@ class _StoryPageViewState extends State<StoryPageView> {
       backgroundColor: Colors.black,
       body: PageView.builder(
         controller: pageController,
-        itemCount: 2,
+        itemCount: widget.pageLength,
         itemBuilder: (context, index) {
           final isLeaving = (index - currentPageValue) <= 0;
           final t = (index - currentPageValue);
@@ -56,8 +75,8 @@ class _StoryPageViewState extends State<StoryPageView> {
             child: Stack(
               children: [
                 StoryPageFrame.wrapped(
-                  pageLength: 2,
-                  stackLength: 3,
+                  pageLength: widget.pageLength,
+                  stackLength: widget.stackLength(index),
                   pageIndex: index,
                   animateToPage: (index) {
                     pageController.animateToPage(index,
@@ -66,6 +85,8 @@ class _StoryPageViewState extends State<StoryPageView> {
                   },
                   isCurrentPage: currentPageValue == index,
                   paging: paging,
+                  onPageLimitReached: widget.onPageLimitReached,
+                  itemBuilder: widget.itemBuilder,
                 ),
                 if (paging && !isLeaving)
                   Positioned.fill(
@@ -92,11 +113,13 @@ class StoryPageFrame extends StatefulWidget {
     @required this.pageIndex,
     @required this.isCurrentPage,
     @required this.paging,
+    @required this.itemBuilder,
   }) : super(key: key);
   final int stackLength;
   final int pageIndex;
   final bool isCurrentPage;
   final bool paging;
+  final StoryItemBuilder itemBuilder;
 
   static Widget wrapped({
     @required int pageIndex,
@@ -105,6 +128,8 @@ class StoryPageFrame extends StatefulWidget {
     @required int stackLength,
     @required bool isCurrentPage,
     @required bool paging,
+    @required VoidCallback onPageLimitReached,
+    @required StoryItemBuilder itemBuilder,
   }) {
     return MultiProvider(
       providers: [
@@ -112,15 +137,13 @@ class StoryPageFrame extends StatefulWidget {
           create: (_context) => StoryStackController(
             stackLength: stackLength,
             onPageBack: () {
-              if (pageIndex == 0) {
-                print("reach 0");
-              } else {
+              if (pageIndex != 0) {
                 animateToPage(pageIndex - 1);
               }
             },
             onPageForward: () {
               if (pageIndex == pageLength - 1) {
-                print("reach limit");
+                onPageLimitReached?.call();
               } else {
                 animateToPage(pageIndex + 1);
               }
@@ -133,6 +156,7 @@ class StoryPageFrame extends StatefulWidget {
         pageIndex: pageIndex,
         isCurrentPage: isCurrentPage,
         paging: paging,
+        itemBuilder: itemBuilder,
       ),
     );
   }
@@ -166,27 +190,10 @@ class _StoryPageFrameState extends State<StoryPageFrame>
             color: Colors.white, //Theme.of(context).scaffoldBackgroundColor,
           ),
         ),
-        IndexedStack(
-          index: context.watch<StoryStackController>().value,
-          children: List.generate(
-            context.watch<StoryStackController>().value + 1,
-            (index) => Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    "pageIndex: ${widget.pageIndex.toString()}",
-                    style: TextStyle(fontSize: 24),
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    "stackIndex: ${index.toString()}",
-                    style: TextStyle(fontSize: 24),
-                  ),
-                ],
-              ),
-            ),
-          ),
+        widget.itemBuilder(
+          context,
+          widget.pageIndex,
+          context.watch<StoryStackController>().value,
         ),
         Container(
           height: 50,
