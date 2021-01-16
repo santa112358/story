@@ -76,6 +76,11 @@ class _StoryPageViewState extends State<StoryPageView> {
   void initState() {
     super.initState();
     pageController = PageController(initialPage: widget.initialPage);
+      
+    if(widget.initialPage != null) {
+      currentPageValue = widget.initialPage.toDouble();
+    }
+      
     pageController.addListener(() {
       setState(() {
         currentPageValue = pageController.page;
