@@ -30,7 +30,10 @@ class StoryPageView extends StatefulWidget {
     this.indicatorPadding =
         const EdgeInsets.symmetric(vertical: 32, horizontal: 8),
     this.backgroundColor = Colors.black,
-  })  : assert(pageLength != null),
+  })  : assert(initialPage != null),
+        assert(indicatorDuration != null),
+        assert(indicatorPadding != null),
+        assert(pageLength != null),
         assert(storyLength != null),
         assert(itemBuilder != null),
         super(key: key);
@@ -70,17 +73,15 @@ class StoryPageView extends StatefulWidget {
 class _StoryPageViewState extends State<StoryPageView> {
   PageController pageController;
 
-  var currentPageValue = 0.0;
+  var currentPageValue;
 
   @override
   void initState() {
     super.initState();
     pageController = PageController(initialPage: widget.initialPage);
-      
-    if(widget.initialPage != null) {
-      currentPageValue = widget.initialPage.toDouble();
-    }
-      
+
+    currentPageValue = widget.initialPage.toDouble();
+
     pageController.addListener(() {
       setState(() {
         currentPageValue = pageController.page;
