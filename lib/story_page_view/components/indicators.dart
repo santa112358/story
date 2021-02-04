@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:story/story_page_view/story_limit_controller.dart';
 
 import '../story_stack_controller.dart';
 
@@ -34,21 +35,13 @@ class _IndicatorsState extends State<Indicators> {
         Tween(begin: 0.0, end: 1.0).animate(widget.animationController)
           ..addListener(() {
             setState(() {});
-          })
-          ..addStatusListener(
-            (status) {
-              if (status == AnimationStatus.completed) {
-                context.read<StoryStackController>().increment(
-                    restartAnimation: () =>
-                        widget.animationController.forward(from: 0));
-              }
-            },
-          );
+          });
   }
 
   @override
   Widget build(BuildContext context) {
     final currentStackIndex = context.watch<StoryStackController>().value;
+    final isStoryEnded = context.watch<StoryLimitController>().value;
     if (!widget.isCurrentPage && widget.isPaging) {
       widget.animationController.stop();
     }
@@ -57,7 +50,9 @@ class _IndicatorsState extends State<Indicators> {
         widget.animationController.value != 0) {
       widget.animationController.value = 0;
     }
-    if (widget.isCurrentPage && !widget.animationController.isAnimating) {
+    if (widget.isCurrentPage &&
+        !widget.animationController.isAnimating &&
+        !isStoryEnded) {
       widget.animationController.forward(from: 0);
     }
     return Padding(
