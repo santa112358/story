@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:story/story_page_view/story_limit_controller.dart';
 import 'package:story/story_page_view/story_stack_controller.dart';
 
 import 'components/gestures.dart';
@@ -184,6 +185,9 @@ class _StoryPageFrame extends StatefulWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(
+          create: (_context) => StoryLimitController(),
+        ),
+        ChangeNotifierProvider(
           create: (_context) => StoryStackController(
             storyLength: storyLength,
             onPageBack: () {
@@ -193,7 +197,9 @@ class _StoryPageFrame extends StatefulWidget {
             },
             onPageForward: () {
               if (pageIndex == pageLength - 1) {
-                onPageLimitReached?.call();
+                _context
+                    .read<StoryLimitController>()
+                    .onPageLimitReached(onPageLimitReached);
               } else {
                 animateToPage(pageIndex + 1);
               }
@@ -230,7 +236,14 @@ class _StoryPageFrameState extends State<_StoryPageFrame>
     animationController = AnimationController(
       vsync: this,
       duration: widget.indicatorDuration ?? Duration(seconds: 5),
-    );
+    )..addStatusListener(
+        (status) {
+          if (status == AnimationStatus.completed) {
+            context.read<StoryStackController>().increment(
+                restartAnimation: () => animationController.forward(from: 0));
+          }
+        },
+      );
   }
 
   @override
