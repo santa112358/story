@@ -1,3 +1,5 @@
+## [0.4.0] - Add `gestureItemBuilder`
+
 ## [0.3.0+1] - Add a close button to example
 
 ## [0.3.0] - Fix a bug `onPageLimitReached` is called multiple time.
