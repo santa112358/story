@@ -109,48 +109,50 @@ class StoryPage extends StatelessWidget {
                   fit: BoxFit.cover,
                 ),
               ),
+              Padding(
+                padding: const EdgeInsets.only(top: 44, left: 8),
+                child: Row(
+                  children: [
+                    Container(
+                      height: 32,
+                      width: 32,
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
+                          image: NetworkImage(user.imageUrl),
+                          fit: BoxFit.cover,
+                        ),
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                    const SizedBox(
+                      width: 8,
+                    ),
+                    Text(
+                      user.userName,
+                      style: TextStyle(
+                        fontSize: 17,
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ],
           );
         },
         gestureItemBuilder: (context, pageIndex, stackIndex) {
-          final user = sampleUsers[pageIndex];
           return Align(
-            alignment: Alignment.topLeft,
+            alignment: Alignment.topRight,
             child: Padding(
-              padding: const EdgeInsets.only(top: 32, left: 8),
-              child: Row(
-                children: [
-                  Container(
-                    height: 32,
-                    width: 32,
-                    decoration: BoxDecoration(
-                      image: DecorationImage(
-                        image: NetworkImage(user.imageUrl),
-                        fit: BoxFit.cover,
-                      ),
-                      shape: BoxShape.circle,
-                    ),
-                  ),
-                  const SizedBox(
-                    width: 8,
-                  ),
-                  Text(
-                    user.userName,
-                    style: TextStyle(
-                      fontSize: 17,
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const Spacer(),
-                  IconButton(
-                    color: Colors.white,
-                    icon: Icon(Icons.close),
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                  ),
-                ],
+              padding: const EdgeInsets.only(top: 32),
+              child: IconButton(
+                padding: EdgeInsets.zero,
+                color: Colors.white,
+                icon: Icon(Icons.close),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
               ),
             ),
           );
