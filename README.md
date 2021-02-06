@@ -43,8 +43,15 @@ return Scaffold(
       final story = user.stories[storyIndex];
       return Stack(
         children: [
-          Positioned.fill(child: Container(color: Colors.black)),
-          Center(child: Image.network(story.imageUrl)),
+          Positioned.fill(
+            child: Container(color: Colors.black),
+          ),
+          Positioned.fill(
+            child: Image.network(
+              story.imageUrl,
+              fit: BoxFit.cover,
+            ),
+          ),
           Padding(
             padding: const EdgeInsets.only(top: 44, left: 8),
             child: Row(
@@ -73,20 +80,43 @@ return Scaffold(
                 ),
               ],
             ),
-          )
+          ),
         ],
+      );
+    },
+    gestureItemBuilder: (context, pageIndex, storyIndex) {
+      return Align(
+        alignment: Alignment.topRight,
+        child: Padding(
+          padding: const EdgeInsets.only(top: 32),
+          child: IconButton(
+            padding: EdgeInsets.zero,
+            color: Colors.white,
+            icon: Icon(Icons.close),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
+        ),
       );
     },
     pageLength: sampleUsers.length,
     storyLength: (int pageIndex) {
       return sampleUsers[pageIndex].stories.length;
     },
-    onPageLimitReached: (){
-      /// Navigator.pop(context)
+    onPageLimitReached: () {
+      Navigator.pop(context);
     },
   ),
 );
 ```
+- `gestureItemBuilder` is the builder for the widgets which needs gesture actions.
+
+In this case, IconButton to close the page is in the callback.
+
+You **CANNOT** place the gesture widgets in `itemBuilder` because it is covered and disabled by default story gestures.
+
+- `onPageLimitReached` is called when the very last story is finished.
 
 - It is recommended to use data model with two layers. In this case, `UserModel` which has the list of `StoryModel`
 
@@ -107,7 +137,6 @@ class StoryModel {
 }
 ```
 
-- `onPageLimitReached` is called when the very last story is finished.
 
 ## Tips
 

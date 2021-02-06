@@ -24,6 +24,7 @@ class StoryPageView extends StatefulWidget {
     @required this.itemBuilder,
     @required this.storyLength,
     @required this.pageLength,
+    this.gestureItemBuilder,
     this.initialStoryIndex,
     this.initialPage = 0,
     this.onPageLimitReached,
@@ -41,6 +42,11 @@ class StoryPageView extends StatefulWidget {
 
   /// Function to build story content
   final _StoryItemBuilder itemBuilder;
+
+  /// Function to build story content
+  /// Components with gesture actions are expected
+  /// Placed above the story gestures.
+  final _StoryItemBuilder gestureItemBuilder;
 
   /// decides length of story for each page
   final _StoryConfigFunction storyLength;
@@ -127,6 +133,7 @@ class _StoryPageViewState extends State<StoryPageView> {
                   isPaging: isPaging,
                   onPageLimitReached: widget.onPageLimitReached,
                   itemBuilder: widget.itemBuilder,
+                  gestureItemBuilder: widget.gestureItemBuilder,
                   indicatorDuration: widget.indicatorDuration,
                   indicatorPadding: widget.indicatorPadding,
                 ),
@@ -157,6 +164,7 @@ class _StoryPageFrame extends StatefulWidget {
     @required this.isCurrentPage,
     @required this.isPaging,
     @required this.itemBuilder,
+    @required this.gestureItemBuilder,
     @required this.indicatorDuration,
     @required this.indicatorPadding,
   }) : super(key: key);
@@ -166,6 +174,7 @@ class _StoryPageFrame extends StatefulWidget {
   final bool isCurrentPage;
   final bool isPaging;
   final _StoryItemBuilder itemBuilder;
+  final _StoryItemBuilder gestureItemBuilder;
   final Duration indicatorDuration;
   final EdgeInsetsGeometry indicatorPadding;
 
@@ -179,6 +188,7 @@ class _StoryPageFrame extends StatefulWidget {
     @required bool isPaging,
     @required VoidCallback onPageLimitReached,
     @required _StoryItemBuilder itemBuilder,
+    @required _StoryItemBuilder gestureItemBuilder,
     @required Duration indicatorDuration,
     @required EdgeInsetsGeometry indicatorPadding,
   }) {
@@ -214,6 +224,7 @@ class _StoryPageFrame extends StatefulWidget {
         isCurrentPage: isCurrentPage,
         isPaging: isPaging,
         itemBuilder: itemBuilder,
+        gestureItemBuilder: gestureItemBuilder,
         indicatorDuration: indicatorDuration,
         indicatorPadding: indicatorPadding,
       ),
@@ -286,6 +297,14 @@ class _StoryPageFrameState extends State<_StoryPageFrame>
         ),
         Gestures(
           animationController: animationController,
+        ),
+        Positioned.fill(
+          child: widget.gestureItemBuilder?.call(
+                context,
+                widget.pageIndex,
+                context.watch<StoryStackController>().value,
+              ) ??
+              const SizedBox.shrink(),
         ),
       ],
     );

@@ -36,7 +36,32 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatelessWidget {
-  MyHomePage({Key key}) : super(key: key);
+  const MyHomePage({Key key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: RaisedButton(
+          child: Text('show stories'),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) {
+                  return StoryPage();
+                },
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+}
+
+class StoryPage extends StatelessWidget {
+  StoryPage({Key key}) : super(key: key);
 
   final sampleUsers = [
     UserModel([
@@ -70,9 +95,9 @@ class MyHomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: StoryPageView(
-        itemBuilder: (context, pageIndex, stackIndex) {
+        itemBuilder: (context, pageIndex, storyIndex) {
           final user = sampleUsers[pageIndex];
-          final story = user.stories[stackIndex];
+          final story = user.stories[storyIndex];
           return Stack(
             children: [
               Positioned.fill(
@@ -85,7 +110,7 @@ class MyHomePage extends StatelessWidget {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.only(top: 32, left: 8),
+                padding: const EdgeInsets.only(top: 44, left: 8),
                 child: Row(
                   children: [
                     Container(
@@ -110,18 +135,26 @@ class MyHomePage extends StatelessWidget {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const Spacer(),
-                    IconButton(
-                      color: Colors.white,
-                      icon: Icon(Icons.close),
-                      onPressed: () {
-                        /// Navigator.pop(context)
-                      },
-                    ),
                   ],
                 ),
-              )
+              ),
             ],
+          );
+        },
+        gestureItemBuilder: (context, pageIndex, storyIndex) {
+          return Align(
+            alignment: Alignment.topRight,
+            child: Padding(
+              padding: const EdgeInsets.only(top: 32),
+              child: IconButton(
+                padding: EdgeInsets.zero,
+                color: Colors.white,
+                icon: Icon(Icons.close),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+            ),
           );
         },
         pageLength: sampleUsers.length,
@@ -129,7 +162,7 @@ class MyHomePage extends StatelessWidget {
           return sampleUsers[pageIndex].stories.length;
         },
         onPageLimitReached: () {
-          /// Navigator.pop(context)
+          Navigator.pop(context);
         },
       ),
     );
