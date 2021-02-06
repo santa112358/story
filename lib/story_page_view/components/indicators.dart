@@ -40,7 +40,7 @@ class _IndicatorsState extends State<Indicators> {
 
   @override
   Widget build(BuildContext context) {
-    final currentStackIndex = context.watch<StoryStackController>().value;
+    final currentStoryIndex = context.watch<StoryStackController>().value;
     final isStoryEnded = context.watch<StoryLimitController>().value;
     if (!widget.isCurrentPage && widget.isPaging) {
       widget.animationController.stop();
@@ -64,9 +64,9 @@ class _IndicatorsState extends State<Indicators> {
           widget.storyLength,
           (index) => _Indicator(
             index: index,
-            value: (index == currentStackIndex)
+            value: (index == currentStoryIndex)
                 ? indicatorAnimation.value
-                : (index > currentStackIndex)
+                : (index > currentStoryIndex)
                     ? 0
                     : 1,
           ),

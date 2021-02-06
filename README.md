@@ -38,9 +38,9 @@ This one is the proper usage, extracted from [example](https://pub.dev/packages/
 ``` dart
 return Scaffold(
   body: StoryPageView(
-    itemBuilder: (context, pageIndex, stackIndex) {
+    itemBuilder: (context, pageIndex, storyIndex) {
       final user = sampleUsers[pageIndex];
-      final story = user.stories[stackIndex];
+      final story = user.stories[storyIndex];
       return Stack(
         children: [
           Positioned.fill(
@@ -84,7 +84,7 @@ return Scaffold(
         ],
       );
     },
-    gestureItemBuilder: (context, pageIndex, stackIndex) {
+    gestureItemBuilder: (context, pageIndex, storyIndex) {
       return Align(
         alignment: Alignment.topRight,
         child: Padding(

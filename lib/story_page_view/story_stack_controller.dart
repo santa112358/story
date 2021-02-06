@@ -7,8 +7,8 @@ class StoryStackController extends ValueNotifier<int> {
     @required this.storyLength,
     @required this.onPageForward,
     @required this.onPageBack,
-    initialStackIndex = 0,
-  }) : super(initialStackIndex);
+    initialStoryIndex = 0,
+  }) : super(initialStoryIndex);
   final int storyLength;
   final VoidCallback onPageForward;
   final VoidCallback onPageBack;
