@@ -85,7 +85,7 @@ class MyHomePage extends StatelessWidget {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.only(top: 44, left: 8),
+                padding: const EdgeInsets.only(top: 32, left: 8),
                 child: Row(
                   children: [
                     Container(
@@ -109,6 +109,14 @@ class MyHomePage extends StatelessWidget {
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
                       ),
+                    ),
+                    const Spacer(),
+                    IconButton(
+                      color: Colors.white,
+                      icon: Icon(Icons.close),
+                      onPressed: () {
+                        /// Navigator.pop(context)
+                      },
                     ),
                   ],
                 ),
