@@ -36,7 +36,32 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatelessWidget {
-  MyHomePage({Key key}) : super(key: key);
+  const MyHomePage({Key key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: RaisedButton(
+          child: Text('show stories'),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) {
+                  return StoryPage();
+                },
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+}
+
+class StoryPage extends StatelessWidget {
+  StoryPage({Key key}) : super(key: key);
 
   final sampleUsers = [
     UserModel([
@@ -84,44 +109,50 @@ class MyHomePage extends StatelessWidget {
                   fit: BoxFit.cover,
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.only(top: 32, left: 8),
-                child: Row(
-                  children: [
-                    Container(
-                      height: 32,
-                      width: 32,
-                      decoration: BoxDecoration(
-                        image: DecorationImage(
-                          image: NetworkImage(user.imageUrl),
-                          fit: BoxFit.cover,
-                        ),
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                    const SizedBox(
-                      width: 8,
-                    ),
-                    Text(
-                      user.userName,
-                      style: TextStyle(
-                        fontSize: 17,
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const Spacer(),
-                    IconButton(
-                      color: Colors.white,
-                      icon: Icon(Icons.close),
-                      onPressed: () {
-                        /// Navigator.pop(context)
-                      },
-                    ),
-                  ],
-                ),
-              )
             ],
+          );
+        },
+        gestureItemBuilder: (context, pageIndex, stackIndex) {
+          final user = sampleUsers[pageIndex];
+          return Align(
+            alignment: Alignment.topLeft,
+            child: Padding(
+              padding: const EdgeInsets.only(top: 32, left: 8),
+              child: Row(
+                children: [
+                  Container(
+                    height: 32,
+                    width: 32,
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: NetworkImage(user.imageUrl),
+                        fit: BoxFit.cover,
+                      ),
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                  const SizedBox(
+                    width: 8,
+                  ),
+                  Text(
+                    user.userName,
+                    style: TextStyle(
+                      fontSize: 17,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const Spacer(),
+                  IconButton(
+                    color: Colors.white,
+                    icon: Icon(Icons.close),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                  ),
+                ],
+              ),
+            ),
           );
         },
         pageLength: sampleUsers.length,
@@ -129,7 +160,7 @@ class MyHomePage extends StatelessWidget {
           return sampleUsers[pageIndex].stories.length;
         },
         onPageLimitReached: () {
-          /// Navigator.pop(context)
+          Navigator.pop(context);
         },
       ),
     );
