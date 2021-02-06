@@ -112,7 +112,9 @@ return Scaffold(
 ```
 - `gestureItemBuilder` is the builder for the widgets which needs gesture actions.
 
-In this case, IconButton to close the page is in the callback. You **CANNOT** place the gesture widgets in `itemBuilder` because it is covered and disabled by default story gestures.
+In this case, IconButton to close the page is in the callback.
+
+You **CANNOT** place the gesture widgets in `itemBuilder` because it is covered and disabled by default story gestures.
 
 - `onPageLimitReached` is called when the very last story is finished.
 
