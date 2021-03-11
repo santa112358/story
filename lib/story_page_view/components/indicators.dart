@@ -7,15 +7,15 @@ import '../story_stack_controller.dart';
 
 class Indicators extends StatefulWidget {
   const Indicators({
-    Key key,
-    @required this.animationController,
-    @required this.storyLength,
-    @required this.isCurrentPage,
-    @required this.isPaging,
-    @required this.padding,
+    Key? key,
+    required this.animationController,
+    required this.storyLength,
+    required this.isCurrentPage,
+    required this.isPaging,
+    required this.padding,
   }) : super(key: key);
   final int storyLength;
-  final AnimationController animationController;
+  final AnimationController? animationController;
   final EdgeInsetsGeometry padding;
   final bool isCurrentPage;
   final bool isPaging;
@@ -25,14 +25,14 @@ class Indicators extends StatefulWidget {
 }
 
 class _IndicatorsState extends State<Indicators> {
-  Animation<double> indicatorAnimation;
+  late Animation<double> indicatorAnimation;
 
   @override
   void initState() {
     super.initState();
-    widget.animationController.forward();
+    widget.animationController!.forward();
     indicatorAnimation =
-        Tween(begin: 0.0, end: 1.0).animate(widget.animationController)
+        Tween(begin: 0.0, end: 1.0).animate(widget.animationController!)
           ..addListener(() {
             setState(() {});
           });
@@ -40,20 +40,20 @@ class _IndicatorsState extends State<Indicators> {
 
   @override
   Widget build(BuildContext context) {
-    final currentStoryIndex = context.watch<StoryStackController>().value;
-    final isStoryEnded = context.watch<StoryLimitController>().value;
+    final int currentStoryIndex = context.watch<StoryStackController>().value;
+    final bool isStoryEnded = context.watch<StoryLimitController>().value;
     if (!widget.isCurrentPage && widget.isPaging) {
-      widget.animationController.stop();
+      widget.animationController!.stop();
     }
     if (!widget.isCurrentPage &&
         !widget.isPaging &&
-        widget.animationController.value != 0) {
-      widget.animationController.value = 0;
+        widget.animationController!.value != 0) {
+      widget.animationController!.value = 0;
     }
     if (widget.isCurrentPage &&
-        !widget.animationController.isAnimating &&
+        !widget.animationController!.isAnimating &&
         !isStoryEnded) {
-      widget.animationController.forward(from: 0);
+      widget.animationController!.forward(from: 0);
     }
     return Padding(
       padding: widget.padding,
@@ -78,15 +78,15 @@ class _IndicatorsState extends State<Indicators> {
   @override
   void dispose() {
     super.dispose();
-    widget.animationController.dispose();
+    widget.animationController!.dispose();
   }
 }
 
 class _Indicator extends StatelessWidget {
   const _Indicator({
-    Key key,
-    @required this.index,
-    @required this.value,
+    Key? key,
+    required this.index,
+    required this.value,
   }) : super(key: key);
   final int index;
   final double value;
