@@ -4,9 +4,9 @@ import 'package:flutter/scheduler.dart';
 /// Notify current stack index
 class StoryStackController extends ValueNotifier<int> {
   StoryStackController({
-    @required this.storyLength,
-    @required this.onPageForward,
-    @required this.onPageBack,
+    required this.storyLength,
+    required this.onPageForward,
+    required this.onPageBack,
     initialStoryIndex = 0,
   }) : super(initialStoryIndex);
   final int storyLength;
@@ -15,13 +15,13 @@ class StoryStackController extends ValueNotifier<int> {
 
   int get limitIndex => storyLength - 1;
 
-  AnimationController animationController;
+  //AnimationController? animationController;
 
   void increment(
-      {VoidCallback restartAnimation, VoidCallback completeAnimation}) {
+      {VoidCallback? restartAnimation, VoidCallback? completeAnimation}) {
     if (value == limitIndex) {
       completeAnimation?.call();
-      onPageForward?.call();
+      onPageForward();
     } else {
       value++;
       restartAnimation?.call();
@@ -30,7 +30,7 @@ class StoryStackController extends ValueNotifier<int> {
 
   void decrement() {
     if (value == 0) {
-      onPageBack?.call();
+      onPageBack();
     } else {
       value--;
     }
