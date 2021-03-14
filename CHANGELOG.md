@@ -1,3 +1,5 @@
+## [0.5.0] - Support null safety
+
 ## [0.4.0] - Add `gestureItemBuilder`
 
 ## [0.3.0+1] - Add a close button to example
