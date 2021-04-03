@@ -208,6 +208,7 @@ class _StoryPageFrame extends StatefulWidget {
                 animateToPage(pageIndex + 1);
               }
             },
+            initialStoryIndex: initialStoryIndex,
           ),
         ),
       ],

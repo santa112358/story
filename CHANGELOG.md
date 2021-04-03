@@ -1,3 +1,5 @@
+## [0.5.1] -Fix the problem 'initialStoryIndex' does not work.
+
 ## [0.5.0] - Support null safety
 
 ## [0.4.0] - Add `gestureItemBuilder`
