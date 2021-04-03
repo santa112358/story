@@ -155,6 +155,12 @@ class StoryPage extends StatelessWidget {
             ),
           );
         },
+        initialStoryIndex: (pageIndex) {
+          if (pageIndex == 0) {
+            return 1;
+          }
+          return 0;
+        },
         pageLength: sampleUsers.length,
         storyLength: (int pageIndex) {
           return sampleUsers[pageIndex].stories.length;
