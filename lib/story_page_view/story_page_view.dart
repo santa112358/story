@@ -15,6 +15,8 @@ typedef _StoryItemBuilder = Widget Function(
 
 typedef _StoryConfigFunction = int Function(int pageIndex);
 
+enum IndicatorAnimationCommand { pause, resume }
+
 /// PageView to implement story like UI
 ///
 /// [itemBuilder], [storyLength], [pageLength] are required.
@@ -32,6 +34,7 @@ class StoryPageView extends StatefulWidget {
     this.indicatorPadding =
         const EdgeInsets.symmetric(vertical: 32, horizontal: 8),
     this.backgroundColor = Colors.black,
+    this.indicatorAnimationController,
   }) : super(key: key);
 
   /// Function to build story content
@@ -65,7 +68,12 @@ class StoryPageView extends StatefulWidget {
   /// initial index for [StoryPageView]
   final int initialPage;
 
+  /// Color under the Stories which is visible when the cube transition is in progress
   final Color backgroundColor;
+
+  /// A stream with [IndicatorAnimationCommand] to force pause or continue inticator animation
+  /// Useful when you need to show any popup over the story
+  final ValueNotifier<IndicatorAnimationCommand>? indicatorAnimationController;
 
   @override
   _StoryPageViewState createState() => _StoryPageViewState();
@@ -130,6 +138,8 @@ class _StoryPageViewState extends State<StoryPageView> {
                   gestureItemBuilder: widget.gestureItemBuilder,
                   indicatorDuration: widget.indicatorDuration,
                   indicatorPadding: widget.indicatorPadding,
+                  indicatorAnimationController:
+                      widget.indicatorAnimationController,
                 ),
                 if (isPaging && !isLeaving)
                   Positioned.fill(
@@ -161,6 +171,7 @@ class _StoryPageFrame extends StatefulWidget {
     required this.gestureItemBuilder,
     required this.indicatorDuration,
     required this.indicatorPadding,
+    required this.indicatorAnimationController,
   }) : super(key: key);
   final int storyLength;
   final int initialStoryIndex;
@@ -171,6 +182,7 @@ class _StoryPageFrame extends StatefulWidget {
   final _StoryItemBuilder? gestureItemBuilder;
   final Duration indicatorDuration;
   final EdgeInsetsGeometry indicatorPadding;
+  final ValueNotifier<IndicatorAnimationCommand>? indicatorAnimationController;
 
   static Widget wrapped({
     required int pageIndex,
@@ -185,6 +197,8 @@ class _StoryPageFrame extends StatefulWidget {
     _StoryItemBuilder? gestureItemBuilder,
     required Duration indicatorDuration,
     required EdgeInsetsGeometry indicatorPadding,
+    required ValueNotifier<IndicatorAnimationCommand>?
+        indicatorAnimationController,
   }) {
     return MultiProvider(
       providers: [
@@ -222,6 +236,7 @@ class _StoryPageFrame extends StatefulWidget {
         gestureItemBuilder: gestureItemBuilder,
         indicatorDuration: indicatorDuration,
         indicatorPadding: indicatorPadding,
+        indicatorAnimationController: indicatorAnimationController,
       ),
     );
   }
@@ -236,9 +251,25 @@ class _StoryPageFrameState extends State<_StoryPageFrame>
         SingleTickerProviderStateMixin {
   late AnimationController animationController;
 
+  late VoidCallback listener;
+
   @override
   void initState() {
     super.initState();
+
+    listener = () {
+      if (widget.isCurrentPage) {
+        switch (widget.indicatorAnimationController?.value) {
+          case IndicatorAnimationCommand.pause:
+            animationController.stop();
+            break;
+          case IndicatorAnimationCommand.resume:
+          default:
+            animationController.forward();
+            break;
+        }
+      }
+    };
     animationController = AnimationController(
       vsync: this,
       duration: widget.indicatorDuration,
@@ -250,6 +281,13 @@ class _StoryPageFrameState extends State<_StoryPageFrame>
           }
         },
       );
+    widget.indicatorAnimationController?.addListener(listener);
+  }
+
+  @override
+  void dispose() {
+    widget.indicatorAnimationController?.removeListener(listener);
+    super.dispose();
   }
 
   @override

@@ -58,9 +58,15 @@ class MyHomePage extends StatelessWidget {
   }
 }
 
-class StoryPage extends StatelessWidget {
-  StoryPage({Key key}) : super(key: key);
+class StoryPage extends StatefulWidget {
+  StoryPage({Key? key}) : super(key: key);
 
+  @override
+  _StoryPageState createState() => _StoryPageState();
+}
+
+class _StoryPageState extends State<StoryPage> {
+  late ValueNotifier<IndicatorAnimationCommand> indicatorAnimationController;
   final sampleUsers = [
     UserModel([
       StoryModel(
@@ -88,6 +94,19 @@ class StoryPage extends StatelessWidget {
     ], "User3",
         "https://images.unsplash.com/photo-1609127102567-8a9a21dc27d8?ixid=MXwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHwzOTh8fHxlbnwwfHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"),
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    indicatorAnimationController = ValueNotifier<IndicatorAnimationCommand>(
+        IndicatorAnimationCommand.resume);
+  }
+
+  @override
+  void dispose() {
+    indicatorAnimationController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -140,21 +159,51 @@ class StoryPage extends StatelessWidget {
           );
         },
         gestureItemBuilder: (context, pageIndex, storyIndex) {
-          return Align(
-            alignment: Alignment.topRight,
-            child: Padding(
-              padding: const EdgeInsets.only(top: 32),
-              child: IconButton(
-                padding: EdgeInsets.zero,
-                color: Colors.white,
-                icon: Icon(Icons.close),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
+          return Stack(children: [
+            Align(
+              alignment: Alignment.topRight,
+              child: Padding(
+                padding: const EdgeInsets.only(top: 32),
+                child: IconButton(
+                  padding: EdgeInsets.zero,
+                  color: Colors.white,
+                  icon: Icon(Icons.close),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
               ),
             ),
-          );
+            if (pageIndex == 0)
+              Center(
+                child: ElevatedButton(
+                  child: Text('show modal bottom sheet'),
+                  onPressed: () async {
+                    indicatorAnimationController.value =
+                        IndicatorAnimationCommand.pause;
+                    await showModalBottomSheet(
+                      context: context,
+                      builder: (context) => SizedBox(
+                        height: MediaQuery.of(context).size.height / 2,
+                        child: Padding(
+                          padding: EdgeInsets.all(24),
+                          child: Text(
+                            'Look! The indicator is now paused\n\n'
+                            'It will be coutinued after closing the modal bottom sheet.',
+                            style: Theme.of(context).textTheme.headline5,
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
+                    );
+                    indicatorAnimationController.value =
+                        IndicatorAnimationCommand.resume;
+                  },
+                ),
+              ),
+          ]);
         },
+        indicatorAnimationController: indicatorAnimationController,
         initialStoryIndex: (pageIndex) {
           if (pageIndex == 0) {
             return 1;
