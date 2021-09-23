@@ -34,7 +34,8 @@ class StoryPageView extends StatefulWidget {
     this.initialPage = 0,
     this.onPageLimitReached,
     this.indicatorDuration = const Duration(seconds: 5),
-    this.indicatorPadding = const EdgeInsets.symmetric(vertical: 32, horizontal: 8),
+    this.indicatorPadding =
+        const EdgeInsets.symmetric(vertical: 32, horizontal: 8),
     this.backgroundColor = Colors.black,
     this.indicatorAnimationController,
     this.onPageChanged,
@@ -117,7 +118,8 @@ class _StoryPageViewState extends State<StoryPageView> {
           final t = (index - currentPageValue);
           final rotationY = lerpDouble(0, 30, t as double)!;
           final maxOpacity = 0.8;
-          final num opacity = lerpDouble(0, maxOpacity, t.abs())!.clamp(0.0, maxOpacity);
+          final num opacity =
+              lerpDouble(0, maxOpacity, t.abs())!.clamp(0.0, maxOpacity);
           final isPaging = opacity != maxOpacity;
           final transform = Matrix4.identity();
           transform.setEntry(3, 2, 0.003);
@@ -133,7 +135,9 @@ class _StoryPageViewState extends State<StoryPageView> {
                   initialStoryIndex: widget.initialStoryIndex?.call(index) ?? 0,
                   pageIndex: index,
                   animateToPage: (index) {
-                    pageController!.animateToPage(index, duration: Duration(milliseconds: 500), curve: Curves.ease);
+                    pageController!.animateToPage(index,
+                        duration: Duration(milliseconds: 500),
+                        curve: Curves.ease);
                   },
                   isCurrentPage: currentPageValue == index,
                   isPaging: isPaging,
@@ -142,7 +146,8 @@ class _StoryPageViewState extends State<StoryPageView> {
                   gestureItemBuilder: widget.gestureItemBuilder,
                   indicatorDuration: widget.indicatorDuration,
                   indicatorPadding: widget.indicatorPadding,
-                  indicatorAnimationController: widget.indicatorAnimationController,
+                  indicatorAnimationController:
+                      widget.indicatorAnimationController,
                 ),
                 if (isPaging && !isLeaving)
                   Positioned.fill(
@@ -200,7 +205,8 @@ class _StoryPageFrame extends StatefulWidget {
     _StoryItemBuilder? gestureItemBuilder,
     required Duration indicatorDuration,
     required EdgeInsetsGeometry indicatorPadding,
-    required ValueNotifier<IndicatorAnimationCommand>? indicatorAnimationController,
+    required ValueNotifier<IndicatorAnimationCommand>?
+        indicatorAnimationController,
   }) {
     return MultiProvider(
       providers: [
@@ -217,7 +223,9 @@ class _StoryPageFrame extends StatefulWidget {
             },
             onPageForward: () {
               if (pageIndex == pageLength - 1) {
-                _context.read<StoryLimitController>().onPageLimitReached(onPageLimitReached);
+                _context
+                    .read<StoryLimitController>()
+                    .onPageLimitReached(onPageLimitReached);
               } else {
                 animateToPage(pageIndex + 1);
               }
@@ -246,7 +254,9 @@ class _StoryPageFrame extends StatefulWidget {
 }
 
 class _StoryPageFrameState extends State<_StoryPageFrame>
-    with AutomaticKeepAliveClientMixin<_StoryPageFrame>, SingleTickerProviderStateMixin {
+    with
+        AutomaticKeepAliveClientMixin<_StoryPageFrame>,
+        SingleTickerProviderStateMixin {
   late AnimationController animationController;
 
   late VoidCallback listener;
@@ -274,9 +284,8 @@ class _StoryPageFrameState extends State<_StoryPageFrame>
     )..addStatusListener(
         (status) {
           if (status == AnimationStatus.completed) {
-            context
-                .read<StoryStackController>()
-                .increment(restartAnimation: () => animationController.forward(from: 0));
+            context.read<StoryStackController>().increment(
+                restartAnimation: () => animationController.forward(from: 0));
           }
         },
       );
