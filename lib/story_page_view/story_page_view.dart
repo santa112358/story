@@ -11,7 +11,10 @@ import 'components/gestures.dart';
 import 'components/indicators.dart';
 
 typedef _StoryItemBuilder = Widget Function(
-    BuildContext context, int pageIndex, int storyIndex);
+  BuildContext context,
+  int pageIndex,
+  int storyIndex,
+);
 
 typedef _StoryConfigFunction = int Function(int pageIndex);
 
@@ -35,6 +38,7 @@ class StoryPageView extends StatefulWidget {
         const EdgeInsets.symmetric(vertical: 32, horizontal: 8),
     this.backgroundColor = Colors.black,
     this.indicatorAnimationController,
+    this.onPageChanged,
   }) : super(key: key);
 
   /// Function to build story content
@@ -64,6 +68,9 @@ class StoryPageView extends StatefulWidget {
   ///
   /// Functions like "Navigator.pop(context)" is expected.
   final VoidCallback? onPageLimitReached;
+
+  /// Called whenever the page in the center of the viewport changes.
+  final void Function(int)? onPageChanged;
 
   /// initial index for [StoryPageView]
   final int initialPage;
@@ -105,6 +112,7 @@ class _StoryPageViewState extends State<StoryPageView> {
       child: PageView.builder(
         controller: pageController,
         itemCount: widget.pageLength,
+        onPageChanged: widget.onPageChanged,
         itemBuilder: (context, index) {
           final isLeaving = (index - currentPageValue) <= 0;
           final t = (index - currentPageValue);
