@@ -1,5 +1,4 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/scheduler.dart';
 
 /// Notify current stack index
 class StoryStackController extends ValueNotifier<int> {
