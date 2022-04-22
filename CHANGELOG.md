@@ -1,3 +1,6 @@
+## [0.7.0]
+- Upgraded flutter version
+
 ## [0.6.0]
 - Added possibility to pause and resume indicator animation
 - Added onPageChanged

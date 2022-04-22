@@ -1,17 +1,17 @@
 name: story
 description: Instagram stories like UI with rich animations and customizability.
-version: 0.6.0
+version: 0.7.0
 author: Santa Takahashi
 homepage: https://github.com/santa112358/story
 
 environment:
-  sdk: '>=2.12.0 <3.0.0'
-  flutter: ">=1.17.0"
+  sdk: ">=2.16.1 <3.0.0"
+  flutter: "2.10.3"
 
 dependencies:
   flutter:
     sdk: flutter
-  provider: ^5.0.0
+  provider: ^6.0.2
 
 dev_dependencies:
   flutter_test:
