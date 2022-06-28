@@ -150,6 +150,8 @@ class _StoryPageViewState extends State<StoryPageView> {
                   indicatorDuration: widget.indicatorDuration,
                   indicatorPadding: widget.indicatorPadding,
                   indicatorAnimationController: widget.indicatorAnimationController,
+                  indicatorUnvisitedColor: widget.indicatorUnvisitedColor,
+                  indicatorVisitedColor: widget.indicatorVisitedColor,
                 ),
                 if (isPaging && !isLeaving)
                   Positioned.fill(
