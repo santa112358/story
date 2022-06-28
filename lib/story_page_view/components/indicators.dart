@@ -13,14 +13,14 @@ class Indicators extends StatefulWidget {
     required this.isPaging,
     required this.padding,
     this.indicatorUnvisitedColor,
-    this.indicatorVisitedColor,
+    this.indicatorVisitedColorr,
   }) : super(key: key);
   final int storyLength;
   final AnimationController? animationController;
   final EdgeInsetsGeometry padding;
   final bool isCurrentPage;
   final bool isPaging;
-  final Color? indicatorVisitedColor;
+  final Color? indicatorVisitedColorr;
   final Color? indicatorUnvisitedColor;
 
   @override
@@ -86,11 +86,11 @@ class _Indicator extends StatelessWidget {
     required this.index,
     required this.value,
     this.indicatorUnvisitedColor,
-    this.indicatorVisitedColor,
+    this.indicatorVisitedColorr,
   }) : super(key: key);
   final int index;
   final double value;
-  final Color? indicatorVisitedColor;
+  final Color? indicatorVisitedColorr;
   final Color? indicatorUnvisitedColor;
 
   @override
@@ -102,7 +102,7 @@ class _Indicator extends StatelessWidget {
           value: value,
           backgroundColor: indicatorUnvisitedColor ?? Colors.black.withOpacity(0.08),
           valueColor:
-              indicatorVisitedColor == null ? AlwaysStoppedAnimation<Color>(Colors.white) : AlwaysStoppedAnimation<Color>(indicatorVisitedColor!),
+              indicatorVisitedColorr == null ? AlwaysStoppedAnimation<Color>(Colors.white) : AlwaysStoppedAnimation<Color>(indicatorVisitedColorr!),
           minHeight: 2,
         ),
       ),
