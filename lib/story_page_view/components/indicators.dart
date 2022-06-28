@@ -12,12 +12,16 @@ class Indicators extends StatefulWidget {
     required this.isCurrentPage,
     required this.isPaging,
     required this.padding,
+    this.indicatorUnvisitedColor,
+    this.indicatorVisitedColor,
   }) : super(key: key);
   final int storyLength;
   final AnimationController? animationController;
   final EdgeInsetsGeometry padding;
   final bool isCurrentPage;
   final bool isPaging;
+  final Color? indicatorVisitedColor;
+  final Color? indicatorUnvisitedColor;
 
   @override
   _IndicatorsState createState() => _IndicatorsState();
@@ -30,11 +34,10 @@ class _IndicatorsState extends State<Indicators> {
   void initState() {
     super.initState();
     widget.animationController!.forward();
-    indicatorAnimation =
-        Tween(begin: 0.0, end: 1.0).animate(widget.animationController!)
-          ..addListener(() {
-            setState(() {});
-          });
+    indicatorAnimation = Tween(begin: 0.0, end: 1.0).animate(widget.animationController!)
+      ..addListener(() {
+        setState(() {});
+      });
   }
 
   @override
@@ -44,14 +47,10 @@ class _IndicatorsState extends State<Indicators> {
     if (!widget.isCurrentPage && widget.isPaging) {
       widget.animationController!.stop();
     }
-    if (!widget.isCurrentPage &&
-        !widget.isPaging &&
-        widget.animationController!.value != 0) {
+    if (!widget.isCurrentPage && !widget.isPaging && widget.animationController!.value != 0) {
       widget.animationController!.value = 0;
     }
-    if (widget.isCurrentPage &&
-        !widget.animationController!.isAnimating &&
-        !isStoryEnded) {
+    if (widget.isCurrentPage && !widget.animationController!.isAnimating && !isStoryEnded) {
       widget.animationController!.forward(from: 0);
     }
     return Padding(
@@ -86,9 +85,13 @@ class _Indicator extends StatelessWidget {
     Key? key,
     required this.index,
     required this.value,
+    this.indicatorUnvisitedColor,
+    this.indicatorVisitedColor,
   }) : super(key: key);
   final int index;
   final double value;
+  final Color? indicatorVisitedColor;
+  final Color? indicatorUnvisitedColor;
 
   @override
   Widget build(BuildContext context) {
@@ -97,8 +100,9 @@ class _Indicator extends StatelessWidget {
         padding: EdgeInsets.only(left: (index == 0) ? 0 : 4),
         child: LinearProgressIndicator(
           value: value,
-          backgroundColor: Colors.black.withOpacity(0.08),
-          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+          backgroundColor: indicatorUnvisitedColor ?? Colors.black.withOpacity(0.08),
+          valueColor:
+              indicatorVisitedColor == null ? AlwaysStoppedAnimation<Color>(Colors.white) : AlwaysStoppedAnimation<Color>(indicatorVisitedColor!),
           minHeight: 2,
         ),
       ),
