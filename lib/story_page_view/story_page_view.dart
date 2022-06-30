@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'dart:ui';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:story/story_page_view/story_limit_controller.dart';
@@ -38,7 +39,15 @@ class StoryPageView extends StatefulWidget {
     this.backgroundColor = Colors.black,
     this.indicatorAnimationController,
     this.onPageChanged,
+    this.indicatorVisitedColor = Colors.white,
+    this.indicatorUnvisitedColor = Colors.grey,
   }) : super(key: key);
+
+  ///  visited color of [Indicators]
+  final Color indicatorVisitedColor;
+
+  ///  unvisited color of [Indicators]
+  final Color indicatorUnvisitedColor;
 
   /// Function to build story content
   final _StoryItemBuilder itemBuilder;
@@ -147,6 +156,8 @@ class _StoryPageViewState extends State<StoryPageView> {
                   indicatorPadding: widget.indicatorPadding,
                   indicatorAnimationController:
                       widget.indicatorAnimationController,
+                  indicatorUnvisitedColor: widget.indicatorUnvisitedColor,
+                  indicatorVisitedColor: widget.indicatorVisitedColor,
                 ),
                 if (isPaging && !isLeaving)
                   Positioned.fill(
@@ -179,6 +190,8 @@ class _StoryPageFrame extends StatefulWidget {
     required this.indicatorDuration,
     required this.indicatorPadding,
     required this.indicatorAnimationController,
+    required this.indicatorUnvisitedColor,
+    required this.indicatorVisitedColor,
   }) : super(key: key);
   final int storyLength;
   final int initialStoryIndex;
@@ -190,6 +203,8 @@ class _StoryPageFrame extends StatefulWidget {
   final Duration indicatorDuration;
   final EdgeInsetsGeometry indicatorPadding;
   final ValueNotifier<IndicatorAnimationCommand>? indicatorAnimationController;
+  final Color indicatorVisitedColor;
+  final Color indicatorUnvisitedColor;
 
   static Widget wrapped({
     required int pageIndex,
@@ -206,6 +221,8 @@ class _StoryPageFrame extends StatefulWidget {
     required EdgeInsetsGeometry indicatorPadding,
     required ValueNotifier<IndicatorAnimationCommand>?
         indicatorAnimationController,
+    required Color indicatorVisitedColor,
+    required Color indicatorUnvisitedColor,
   }) {
     return MultiProvider(
       providers: [
@@ -244,6 +261,8 @@ class _StoryPageFrame extends StatefulWidget {
         indicatorDuration: indicatorDuration,
         indicatorPadding: indicatorPadding,
         indicatorAnimationController: indicatorAnimationController,
+        indicatorVisitedColor: indicatorVisitedColor,
+        indicatorUnvisitedColor: indicatorUnvisitedColor,
       ),
     );
   }
@@ -334,6 +353,8 @@ class _StoryPageFrameState extends State<_StoryPageFrame>
           isCurrentPage: widget.isCurrentPage,
           isPaging: widget.isPaging,
           padding: widget.indicatorPadding,
+          indicatorVisitedColor: widget.indicatorVisitedColor,
+          indicatorUnvisitedColor: widget.indicatorUnvisitedColor,
         ),
         Gestures(
           animationController: animationController,
