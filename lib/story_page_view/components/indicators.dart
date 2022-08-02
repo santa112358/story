@@ -12,12 +12,16 @@ class Indicators extends StatefulWidget {
     required this.isCurrentPage,
     required this.isPaging,
     required this.padding,
+    required this.indicatorColor,
+    required this.indicatorHeight,
   }) : super(key: key);
   final int storyLength;
   final AnimationController? animationController;
   final EdgeInsetsGeometry padding;
   final bool isCurrentPage;
   final bool isPaging;
+  final Color indicatorColor;
+  final double indicatorHeight;
 
   @override
   _IndicatorsState createState() => _IndicatorsState();
@@ -63,6 +67,8 @@ class _IndicatorsState extends State<Indicators> {
           widget.storyLength,
           (index) => _Indicator(
             index: index,
+            indicatorColor: widget.indicatorColor,
+            indicatorHeight: widget.indicatorHeight,
             value: (index == currentStoryIndex)
                 ? indicatorAnimation.value
                 : (index > currentStoryIndex)
@@ -86,9 +92,13 @@ class _Indicator extends StatelessWidget {
     Key? key,
     required this.index,
     required this.value,
+    required this.indicatorColor,
+    required this.indicatorHeight,
   }) : super(key: key);
   final int index;
   final double value;
+  final Color indicatorColor;
+  final double indicatorHeight;
 
   @override
   Widget build(BuildContext context) {
@@ -98,8 +108,8 @@ class _Indicator extends StatelessWidget {
         child: LinearProgressIndicator(
           value: value,
           backgroundColor: Colors.black.withOpacity(0.08),
-          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-          minHeight: 2,
+          valueColor: AlwaysStoppedAnimation<Color>(indicatorColor),
+          minHeight: indicatorHeight,
         ),
       ),
     );
