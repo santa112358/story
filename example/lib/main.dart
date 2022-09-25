@@ -51,7 +51,7 @@ class MyHomePage extends StatelessWidget {
               context,
               MaterialPageRoute(
                 builder: (context) {
-                  return StoryPage();
+                  return const StoryPage();
                 },
               ),
             );
