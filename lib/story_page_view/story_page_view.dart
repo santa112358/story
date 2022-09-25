@@ -41,6 +41,9 @@ class StoryPageView extends StatefulWidget {
     this.onPageChanged,
     this.indicatorVisitedColor = Colors.white,
     this.indicatorUnvisitedColor = Colors.grey,
+    this.indicatorColor = Colors.white,
+    this.indicatorHeight = 2,
+    this.showShadow = false,
   }) : super(key: key);
 
   ///  visited color of [Indicators]
@@ -85,6 +88,15 @@ class StoryPageView extends StatefulWidget {
 
   /// Color under the Stories which is visible when the cube transition is in progress
   final Color backgroundColor;
+
+  /// Color for the indicator
+  final Color indicatorColor;
+
+  /// Width of indicator
+  final double indicatorHeight;
+
+  /// Whether to show shadow near indicator
+  final bool showShadow;
 
   /// A stream with [IndicatorAnimationCommand] to force pause or continue inticator animation
   /// Useful when you need to show any popup over the story
@@ -138,6 +150,9 @@ class _StoryPageViewState extends State<StoryPageView> {
             child: Stack(
               children: [
                 _StoryPageFrame.wrapped(
+                  showShadow: widget.showShadow,
+                  indicatorColor: widget.indicatorColor,
+                  indicatorHeight: widget.indicatorHeight,
                   pageLength: widget.pageLength,
                   storyLength: widget.storyLength(index),
                   initialStoryIndex: widget.initialStoryIndex?.call(index) ?? 0,
@@ -192,6 +207,9 @@ class _StoryPageFrame extends StatefulWidget {
     required this.indicatorAnimationController,
     required this.indicatorUnvisitedColor,
     required this.indicatorVisitedColor,
+    required this.indicatorColor,
+    required this.indicatorHeight,
+    required this.showShadow,
   }) : super(key: key);
   final int storyLength;
   final int initialStoryIndex;
@@ -205,6 +223,9 @@ class _StoryPageFrame extends StatefulWidget {
   final ValueNotifier<IndicatorAnimationCommand>? indicatorAnimationController;
   final Color indicatorVisitedColor;
   final Color indicatorUnvisitedColor;
+  final Color indicatorColor;
+  final double indicatorHeight;
+  final bool showShadow;
 
   static Widget wrapped({
     required int pageIndex,
@@ -223,6 +244,9 @@ class _StoryPageFrame extends StatefulWidget {
         indicatorAnimationController,
     required Color indicatorVisitedColor,
     required Color indicatorUnvisitedColor,
+    required Color indicatorColor,
+    required double indicatorHeight,
+    required bool showShadow,
   }) {
     return MultiProvider(
       providers: [
@@ -251,6 +275,7 @@ class _StoryPageFrame extends StatefulWidget {
         ),
       ],
       child: _StoryPageFrame._(
+        showShadow: showShadow,
         storyLength: storyLength,
         initialStoryIndex: initialStoryIndex,
         pageIndex: pageIndex,
@@ -263,6 +288,8 @@ class _StoryPageFrame extends StatefulWidget {
         indicatorAnimationController: indicatorAnimationController,
         indicatorVisitedColor: indicatorVisitedColor,
         indicatorUnvisitedColor: indicatorUnvisitedColor,
+        indicatorColor: indicatorColor,
+        indicatorHeight: indicatorHeight,
       ),
     );
   }
@@ -337,17 +364,21 @@ class _StoryPageFrameState extends State<_StoryPageFrame>
         ),
         Container(
           height: 50,
-          decoration: BoxDecoration(
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.1),
-                spreadRadius: 10,
-                blurRadius: 20,
-              ),
-            ],
-          ),
+          decoration: widget.showShadow
+              ? BoxDecoration(
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      spreadRadius: 10,
+                      blurRadius: 20,
+                    ),
+                  ],
+                )
+              : null,
         ),
         Indicators(
+          indicatorColor: widget.indicatorColor,
+          indicatorHeight: widget.indicatorHeight,
           storyLength: widget.storyLength,
           animationController: animationController,
           isCurrentPage: widget.isCurrentPage,
