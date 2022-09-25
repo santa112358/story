@@ -111,10 +111,6 @@ class _Indicator extends StatelessWidget {
   final Color indicatorColor;
   final double indicatorHeight;
 
-  }) : super(key: key);
-  final int index;
-  final double value;
-
   @override
   Widget build(BuildContext context) {
     return Expanded(
