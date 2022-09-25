@@ -143,3 +143,5 @@ class StoryModel {
 This package is still under development. If you have any requests or questions, please ask on [github](https://github.com/santa112358/story/issues)
 
 
+## Contributors
+[![All Contributors](https://img.shields.io/badge/all_contributors-13-orange.svg?style=flat-square)](#contributors)
