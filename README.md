@@ -1,6 +1,6 @@
 # story
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-5-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-6-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 [![pub package](https://img.shields.io/pub/v/story.svg)](https://pub.dev/packages/story)
@@ -160,6 +160,7 @@ This package is still under development. If you have any requests or questions, 
       <td align="center"><a href="https://github.com/badgentlemen"><img src="https://avatars.githubusercontent.com/u/29949358?v=4?s=100" width="100px;" alt="Медик"/><br /><sub><b>Медик</b></sub></a><br /><a href="https://github.com/santa112358/story/commits?author=badgentlemen" title="Code">💻</a></td>
       <td align="center"><a href="https://github.com/alperensoysall"><img src="https://avatars.githubusercontent.com/u/107396431?v=4?s=100" width="100px;" alt="Alperen Soysal"/><br /><sub><b>Alperen Soysal</b></sub></a><br /><a href="https://github.com/santa112358/story/commits?author=alperensoysall" title="Code">💻</a></td>
       <td align="center"><a href="https://github.com/AtixD"><img src="https://avatars.githubusercontent.com/u/17594120?v=4?s=100" width="100px;" alt="AtixD"/><br /><sub><b>AtixD</b></sub></a><br /><a href="https://github.com/santa112358/story/commits?author=AtixD" title="Code">💻</a></td>
+      <td align="center"><a href="https://github.com/harshitFinmapp"><img src="https://avatars.githubusercontent.com/u/110468872?v=4?s=100" width="100px;" alt="harshitFinmapp"/><br /><sub><b>harshitFinmapp</b></sub></a><br /><a href="https://github.com/santa112358/story/commits?author=harshitFinmapp" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
