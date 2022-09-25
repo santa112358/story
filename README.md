@@ -1,6 +1,6 @@
 # story
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-2-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-3-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 [![pub package](https://img.shields.io/pub/v/story.svg)](https://pub.dev/packages/story)
@@ -157,6 +157,7 @@ This package is still under development. If you have any requests or questions, 
     <tr>
       <td align="center"><a href="https://pub.dev/publishers/3tadev.work/packages"><img src="https://avatars.githubusercontent.com/u/43510799?v=4?s=100" width="100px;" alt="Santa Takahashi"/><br /><sub><b>Santa Takahashi</b></sub></a><br /><a href="https://github.com/santa112358/story/commits?author=santa112358" title="Code">💻</a></td>
       <td align="center"><a href="https://github.com/imejiasoft"><img src="https://avatars.githubusercontent.com/u/44923350?v=4?s=100" width="100px;" alt="Isaias Mejia de los Santos"/><br /><sub><b>Isaias Mejia de los Santos</b></sub></a><br /><a href="https://github.com/santa112358/story/commits?author=imejiasoft" title="Code">💻</a></td>
+      <td align="center"><a href="https://github.com/badgentlemen"><img src="https://avatars.githubusercontent.com/u/29949358?v=4?s=100" width="100px;" alt="Медик"/><br /><sub><b>Медик</b></sub></a><br /><a href="https://github.com/santa112358/story/commits?author=badgentlemen" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>

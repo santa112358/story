@@ -27,6 +27,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "badgentlemen",
+      "name": "Медик",
+      "avatar_url": "https://avatars.githubusercontent.com/u/29949358?v=4",
+      "profile": "https://github.com/badgentlemen",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7
