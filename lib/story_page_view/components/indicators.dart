@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:story/story_page_view/story_limit_controller.dart';
@@ -12,6 +13,8 @@ class Indicators extends StatefulWidget {
     required this.isCurrentPage,
     required this.isPaging,
     required this.padding,
+    required this.indicatorUnvisitedColor,
+    required this.indicatorVisitedColor,
     required this.indicatorColor,
     required this.indicatorHeight,
   }) : super(key: key);
@@ -20,6 +23,8 @@ class Indicators extends StatefulWidget {
   final EdgeInsetsGeometry padding;
   final bool isCurrentPage;
   final bool isPaging;
+  final Color indicatorVisitedColor;
+  final Color indicatorUnvisitedColor;
   final Color indicatorColor;
   final double indicatorHeight;
 
@@ -74,6 +79,8 @@ class _IndicatorsState extends State<Indicators> {
                 : (index > currentStoryIndex)
                     ? 0
                     : 1,
+            indicatorVisitedColor: widget.indicatorVisitedColor,
+            indicatorUnvisitedColor: widget.indicatorUnvisitedColor,
           ),
         ),
       ),
@@ -92,13 +99,21 @@ class _Indicator extends StatelessWidget {
     Key? key,
     required this.index,
     required this.value,
+    required this.indicatorVisitedColor,
+    required this.indicatorUnvisitedColor,
     required this.indicatorColor,
     required this.indicatorHeight,
   }) : super(key: key);
   final int index;
   final double value;
+  final Color indicatorVisitedColor;
+  final Color indicatorUnvisitedColor;
   final Color indicatorColor;
   final double indicatorHeight;
+
+  }) : super(key: key);
+  final int index;
+  final double value;
 
   @override
   Widget build(BuildContext context) {
@@ -107,9 +122,9 @@ class _Indicator extends StatelessWidget {
         padding: EdgeInsets.only(left: (index == 0) ? 0 : 4),
         child: LinearProgressIndicator(
           value: value,
-          backgroundColor: Colors.black.withOpacity(0.08),
-          valueColor: AlwaysStoppedAnimation<Color>(indicatorColor),
-          minHeight: indicatorHeight,
+          backgroundColor: indicatorUnvisitedColor,
+          valueColor: AlwaysStoppedAnimation<Color>(indicatorVisitedColor),
+          minHeight: 2,
         ),
       ),
     );
