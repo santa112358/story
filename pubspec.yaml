@@ -1,7 +1,6 @@
 name: story
 description: Instagram stories like UI with rich animations and customizability.
 version: 0.7.0
-author: Santa Takahashi
 homepage: https://github.com/santa112358/story
 
 environment:
