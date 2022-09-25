@@ -1,3 +1,6 @@
+## [0.8.0]
+- Added parameters to change indicator color and height
+
 ## [0.7.0]
 - Upgraded flutter version
 
