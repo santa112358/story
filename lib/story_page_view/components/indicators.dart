@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:story/story_page_view/story_limit_controller.dart';
@@ -15,7 +14,6 @@ class Indicators extends StatefulWidget {
     required this.padding,
     required this.indicatorUnvisitedColor,
     required this.indicatorVisitedColor,
-    required this.indicatorColor,
     required this.indicatorHeight,
   }) : super(key: key);
   final int storyLength;
@@ -25,7 +23,6 @@ class Indicators extends StatefulWidget {
   final bool isPaging;
   final Color indicatorVisitedColor;
   final Color indicatorUnvisitedColor;
-  final Color indicatorColor;
   final double indicatorHeight;
 
   @override
@@ -72,7 +69,6 @@ class _IndicatorsState extends State<Indicators> {
           widget.storyLength,
           (index) => _Indicator(
             index: index,
-            indicatorColor: widget.indicatorColor,
             indicatorHeight: widget.indicatorHeight,
             value: (index == currentStoryIndex)
                 ? indicatorAnimation.value
@@ -101,14 +97,12 @@ class _Indicator extends StatelessWidget {
     required this.value,
     required this.indicatorVisitedColor,
     required this.indicatorUnvisitedColor,
-    required this.indicatorColor,
     required this.indicatorHeight,
   }) : super(key: key);
   final int index;
   final double value;
   final Color indicatorVisitedColor;
   final Color indicatorUnvisitedColor;
-  final Color indicatorColor;
   final double indicatorHeight;
 
   @override

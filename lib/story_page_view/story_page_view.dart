@@ -1,7 +1,6 @@
 import 'dart:math';
 import 'dart:ui';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:story/story_page_view/story_limit_controller.dart';
@@ -41,7 +40,6 @@ class StoryPageView extends StatefulWidget {
     this.onPageChanged,
     this.indicatorVisitedColor = Colors.white,
     this.indicatorUnvisitedColor = Colors.grey,
-    this.indicatorColor = Colors.white,
     this.indicatorHeight = 2,
     this.showShadow = false,
   }) : super(key: key);
@@ -88,9 +86,6 @@ class StoryPageView extends StatefulWidget {
 
   /// Color under the Stories which is visible when the cube transition is in progress
   final Color backgroundColor;
-
-  /// Color for the indicator
-  final Color indicatorColor;
 
   /// Width of indicator
   final double indicatorHeight;
@@ -151,7 +146,6 @@ class _StoryPageViewState extends State<StoryPageView> {
               children: [
                 _StoryPageFrame.wrapped(
                   showShadow: widget.showShadow,
-                  indicatorColor: widget.indicatorColor,
                   indicatorHeight: widget.indicatorHeight,
                   pageLength: widget.pageLength,
                   storyLength: widget.storyLength(index),
@@ -207,7 +201,6 @@ class _StoryPageFrame extends StatefulWidget {
     required this.indicatorAnimationController,
     required this.indicatorUnvisitedColor,
     required this.indicatorVisitedColor,
-    required this.indicatorColor,
     required this.indicatorHeight,
     required this.showShadow,
   }) : super(key: key);
@@ -223,7 +216,6 @@ class _StoryPageFrame extends StatefulWidget {
   final ValueNotifier<IndicatorAnimationCommand>? indicatorAnimationController;
   final Color indicatorVisitedColor;
   final Color indicatorUnvisitedColor;
-  final Color indicatorColor;
   final double indicatorHeight;
   final bool showShadow;
 
@@ -244,7 +236,6 @@ class _StoryPageFrame extends StatefulWidget {
         indicatorAnimationController,
     required Color indicatorVisitedColor,
     required Color indicatorUnvisitedColor,
-    required Color indicatorColor,
     required double indicatorHeight,
     required bool showShadow,
   }) {
@@ -288,7 +279,6 @@ class _StoryPageFrame extends StatefulWidget {
         indicatorAnimationController: indicatorAnimationController,
         indicatorVisitedColor: indicatorVisitedColor,
         indicatorUnvisitedColor: indicatorUnvisitedColor,
-        indicatorColor: indicatorColor,
         indicatorHeight: indicatorHeight,
       ),
     );
@@ -377,7 +367,6 @@ class _StoryPageFrameState extends State<_StoryPageFrame>
               : null,
         ),
         Indicators(
-          indicatorColor: widget.indicatorColor,
           indicatorHeight: widget.indicatorHeight,
           storyLength: widget.storyLength,
           animationController: animationController,
