@@ -1,11 +1,15 @@
-# story
-
+<p align="center">
+  <a href="https://pub.dev/packages/story">
+    <img src="https://raw.githubusercontent.com/santa112358/story/v1.0.0/logo/story.png" width="480px"/>
+  </a>
+</p>
+<p align="center">
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
 [![All Contributors](https://img.shields.io/badge/all_contributors-6-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
-
 [![pub package](https://img.shields.io/pub/v/story.svg)](https://pub.dev/packages/story)
 <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/license-MIT-purple.svg" alt="License: MIT"></a>
+</p>
 
 Instagram stories like UI with rich animations and customizability.
 
