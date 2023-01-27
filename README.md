@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://pub.dev/packages/story">
-    <img src="https://raw.githubusercontent.com/santa112358/story/v1.0.0/logo/story.png" width="320px"/>
+    <img src="https://raw.githubusercontent.com/santa112358/story/v1.0.0/logo/logo.png" width="240px"/>
   </a>
 </p>
 <p align="center">
