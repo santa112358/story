@@ -4,9 +4,11 @@
   </a>
 </p>
 <p align="center">
-<a><img src="https://img.shields.io/badge/all_contributors-6-orange.svg?style=flat-square" alt="all contributors"></a>
-<a href="(https://pub.dev/packages/story"><img src="https://img.shields.io/pub/v/story.svg" alt="all contributors"></a>
+<a href="(https://pub.dev/packages/story"><img src="https://img.shields.io/pub/v/story.svg" alt="version"></a>
+<a href="(https://pub.dev/packages/story/score"><img src="https://img.shields.io/pub/popularity/story?logo=dart" alt="likes"></a>
+<a href="(https://pub.dev/packages/story/score"><img src="https://img.shields.io/pub/likes/story?logo=dart" alt="popularity"></a>
 <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/license-MIT-purple.svg" alt="License: MIT"></a>
+<a><img src="https://img.shields.io/badge/all_contributors-6-orange.svg?style=flat-square" alt="all contributors"></a>
 </p>
 
 Instagram stories like UI with rich animations and customizability.
