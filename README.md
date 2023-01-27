@@ -4,13 +4,8 @@
   </a>
 </p>
 <p align="center">
-<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-6-orange.svg?style=flat-square)](#contributors-)
-<!-- ALL-CONTRIBUTORS-BADGE:END -->
 <a><img src="https://img.shields.io/badge/all_contributors-6-orange.svg?style=flat-square" alt="all contributors"></a>
-
-
-[![pub package](https://img.shields.io/pub/v/story.svg)](https://pub.dev/packages/story)
+<a href="(https://pub.dev/packages/story"><img src="https://img.shields.io/pub/v/story.svg" alt="all contributors"></a>
 <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/license-MIT-purple.svg" alt="License: MIT"></a>
 </p>
 
@@ -179,7 +174,7 @@ handled properly.
 If you stop/start the animation of the story with your custom widgets,
 use `indicatorAnimationController`
 
-```dart
+``` dart
 class _StoryPageState extends State<StoryPage> {
   late ValueNotifier<IndicatorAnimationCommand> indicatorAnimationController;
 
