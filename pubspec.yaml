@@ -1,6 +1,6 @@
 name: story
 description: Instagram stories like UI with rich animations and customizability.
-version: 1.0.0
+version: 1.0.0+1
 homepage: https://github.com/santa112358/story
 
 environment:
