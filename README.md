@@ -1,4 +1,5 @@
 # story
+
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
 [![All Contributors](https://img.shields.io/badge/all_contributors-6-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
@@ -12,8 +13,9 @@ Instagram stories like UI with rich animations and customizability.
 
 ## Usage
 
-`StoryPageView` needs at least three arguments: `itemBuilder`, `pageLength`, and `storyLength`.
-```dart
+`StoryPageView` requires at least three arguments: `itemBuilder`, `pageLength`, and `storyLength`.
+
+``` dart
 /// Minimum example to explain the usage.
 return Scaffold(
   body: StoryPageView(
@@ -28,9 +30,12 @@ return Scaffold(
     pageLength: 4,
   );
 ```
-- `itemBuilder` is necessary to build the content of story. It is called with index of pageView and index of the story on the page.
 
-- `storyLength` decides the length of story for each page. The example above always returns 3, but it should depend on the argument `pageIndex`
+- `itemBuilder` builds the content of each story and is called with the index of the pageView and
+  the index of the story on the page.
+
+- `storyLength` decides the length of story for each page. The example above always returns 3, but
+  it should depend on `pageIndex`.
 
 - `pageLength` is just the length of `StoryPageView`
 
@@ -113,15 +118,18 @@ return Scaffold(
   ),
 );
 ```
-- `gestureItemBuilder` is the builder for the widgets which needs gesture actions.
+
+- `gestureItemBuilder` builds widgets that need gesture actions
 
 In this case, IconButton to close the page is in the callback.
 
-You **CANNOT** place the gesture widgets in `itemBuilder` because it is covered and disabled by default story gestures.
+You **CANNOT** place the gesture widgets in `itemBuilder` as they are covered and disabled by the
+default story gestures.
 
 - `onPageLimitReached` is called when the very last story is finished.
 
-- It is recommended to use data model with two layers. In this case, `UserModel` which has the list of `StoryModel`
+- It is recommended to use data model with two layers. In this case, `UserModel` which has the list
+  of `StoryModel`
 
 ```dart
 /// Example Data Model
@@ -140,13 +148,12 @@ class StoryModel {
 }
 ```
 
-
-## StoryImage
+### StoryImage
 
 If you show images in `StoryPageView`, use `StoryImage`. It can stop the indicator until the image
 is fully loaded.
 
-```dart
+``` dart
 StoryImage(
   /// key is required
   key: ValueKey(story.imageUrl),
@@ -154,9 +161,58 @@ StoryImage(
     story.imageUrl,
   ),
   fit: BoxFit.fitWidth,
-),
+)
 ```
-Be sure to assign the unique key value for each image, otherwise the image loading will not be handled properly.
+
+Be sure to assign the unique key value for each image, otherwise the image loading will not be
+handled properly.
+
+### indicatorAnimationController
+
+If you stop/start the animation of the story with your custom widgets,
+use `indicatorAnimationController`
+
+```dart
+class _StoryPageState extends State<StoryPage> {
+  late ValueNotifier<IndicatorAnimationCommand> indicatorAnimationController;
+
+  @override
+  void initState() {
+    super.initState();
+    indicatorAnimationController = ValueNotifier<IndicatorAnimationCommand>(
+        IndicatorAnimationCommand.resume);
+  }
+
+  @override
+  void dispose() {
+    indicatorAnimationController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: StoryPageView(
+        indicatorAnimationController: indicatorAnimationController,
+        ...,
+      ),
+    );
+  }
+}
+```
+
+Once the instance is passed to `StoryPageView`, you can stop handle the indicator by the methods
+below.
+
+```dart
+
+/// To pause the indicator
+indicatorAnimationController.value = IndicatorAnimationCommand.pause;
+
+/// To resume the indicator
+indicatorAnimationController.value = IndicatorAnimationCommand.resume;
+
+```
 
 ## Contributors
 
