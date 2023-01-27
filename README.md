@@ -141,10 +141,22 @@ class StoryModel {
 ```
 
 
-## Tips
+## StoryImage
 
-This package is still under development. If you have any requests or questions, please ask on [github](https://github.com/santa112358/story/issues)
+If you show images in `StoryPageView`, use `StoryImage`. It can stop the indicator until the image
+is fully loaded.
 
+```dart
+StoryImage(
+  /// key is required
+  key: ValueKey(story.imageUrl),
+  imageProvider: NetworkImage(
+    story.imageUrl,
+  ),
+  fit: BoxFit.fitWidth,
+),
+```
+Be sure to assign the unique key value for each image, otherwise the image loading will not be handled properly.
 
 ## Contributors
 
