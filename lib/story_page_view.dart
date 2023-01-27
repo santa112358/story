@@ -591,7 +591,7 @@ class _Indicator extends StatelessWidget {
           value: value,
           backgroundColor: indicatorUnvisitedColor,
           valueColor: AlwaysStoppedAnimation<Color>(indicatorVisitedColor),
-          minHeight: 2,
+          minHeight: indicatorHeight,
         ),
       ),
     );
