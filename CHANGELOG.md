@@ -1,3 +1,7 @@
+## [1.0.0]
+- Added StoryImage to handle image loading and story indicator
+- Fixed the problem indicatorHeight is not passed.
+
 ## [0.8.0]
 - Added parameters to change indicator color and height
 
