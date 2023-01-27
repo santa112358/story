@@ -3,11 +3,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:story/story_page_view/story_limit_controller.dart';
-import 'package:story/story_page_view/story_stack_controller.dart';
-
-import 'components/gestures.dart';
-import 'components/indicators.dart';
+import 'package:story/story_image.dart';
 
 typedef _StoryItemBuilder = Widget Function(
   BuildContext context,
@@ -44,10 +40,10 @@ class StoryPageView extends StatefulWidget {
     this.showShadow = false,
   }) : super(key: key);
 
-  ///  visited color of [Indicators]
+  ///  visited color of [_Indicators]
   final Color indicatorVisitedColor;
 
-  ///  unvisited color of [Indicators]
+  ///  unvisited color of [_Indicators]
   final Color indicatorUnvisitedColor;
 
   /// Function to build story content
@@ -67,10 +63,10 @@ class StoryPageView extends StatefulWidget {
   /// Initial index of story for each page
   final _StoryConfigFunction? initialStoryIndex;
 
-  /// padding of [Indicators]
+  /// padding of [_Indicators]
   final EdgeInsetsGeometry indicatorPadding;
 
-  /// duration of [Indicators]
+  /// duration of [_Indicators]
   final Duration indicatorDuration;
 
   /// Called when the very last story is finished.
@@ -144,7 +140,7 @@ class _StoryPageViewState extends State<StoryPageView> {
             transform: transform,
             child: Stack(
               children: [
-                _StoryPageFrame.wrapped(
+                _StoryPageBuilder.wrapped(
                   showShadow: widget.showShadow,
                   indicatorHeight: widget.indicatorHeight,
                   pageLength: widget.pageLength,
@@ -186,8 +182,8 @@ class _StoryPageViewState extends State<StoryPageView> {
   }
 }
 
-class _StoryPageFrame extends StatefulWidget {
-  const _StoryPageFrame._({
+class _StoryPageBuilder extends StatefulWidget {
+  const _StoryPageBuilder._({
     Key? key,
     required this.storyLength,
     required this.initialStoryIndex,
@@ -242,10 +238,10 @@ class _StoryPageFrame extends StatefulWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(
-          create: (_context) => StoryLimitController(),
+          create: (_context) => _StoryLimitController(),
         ),
         ChangeNotifierProvider(
-          create: (_context) => StoryStackController(
+          create: (_context) => _StoryStackController(
             storyLength: storyLength,
             onPageBack: () {
               if (pageIndex != 0) {
@@ -255,7 +251,7 @@ class _StoryPageFrame extends StatefulWidget {
             onPageForward: () {
               if (pageIndex == pageLength - 1) {
                 _context
-                    .read<StoryLimitController>()
+                    .read<_StoryLimitController>()
                     .onPageLimitReached(onPageLimitReached);
               } else {
                 animateToPage(pageIndex + 1);
@@ -265,7 +261,7 @@ class _StoryPageFrame extends StatefulWidget {
           ),
         ),
       ],
-      child: _StoryPageFrame._(
+      child: _StoryPageBuilder._(
         showShadow: showShadow,
         storyLength: storyLength,
         initialStoryIndex: initialStoryIndex,
@@ -285,22 +281,23 @@ class _StoryPageFrame extends StatefulWidget {
   }
 
   @override
-  _StoryPageFrameState createState() => _StoryPageFrameState();
+  _StoryPageBuilderState createState() => _StoryPageBuilderState();
 }
 
-class _StoryPageFrameState extends State<_StoryPageFrame>
+class _StoryPageBuilderState extends State<_StoryPageBuilder>
     with
-        AutomaticKeepAliveClientMixin<_StoryPageFrame>,
+        AutomaticKeepAliveClientMixin<_StoryPageBuilder>,
         SingleTickerProviderStateMixin {
   late AnimationController animationController;
 
-  late VoidCallback listener;
+  late VoidCallback indicatorListener;
+  late VoidCallback imageLoadingListener;
 
   @override
   void initState() {
     super.initState();
 
-    listener = () {
+    indicatorListener = () {
       if (widget.isCurrentPage) {
         switch (widget.indicatorAnimationController?.value) {
           case IndicatorAnimationCommand.pause:
@@ -308,6 +305,26 @@ class _StoryPageFrameState extends State<_StoryPageFrame>
             break;
           case IndicatorAnimationCommand.resume:
           default:
+            if (storyImageLoadingController.value ==
+                StoryImageLoadingState.loading) {
+              return;
+            }
+            animationController.forward();
+            break;
+        }
+      }
+    };
+    imageLoadingListener = () {
+      if (widget.isCurrentPage) {
+        switch (storyImageLoadingController.value) {
+          case StoryImageLoadingState.loading:
+            animationController.stop();
+            break;
+          case StoryImageLoadingState.available:
+            if (widget.indicatorAnimationController?.value ==
+                IndicatorAnimationCommand.pause) {
+              return;
+            }
             animationController.forward();
             break;
         }
@@ -319,17 +336,20 @@ class _StoryPageFrameState extends State<_StoryPageFrame>
     )..addStatusListener(
         (status) {
           if (status == AnimationStatus.completed) {
-            context.read<StoryStackController>().increment(
+            context.read<_StoryStackController>().increment(
                 restartAnimation: () => animationController.forward(from: 0));
           }
         },
       );
-    widget.indicatorAnimationController?.addListener(listener);
+    widget.indicatorAnimationController?.addListener(indicatorListener);
+    storyImageLoadingController.addListener(imageLoadingListener);
   }
 
   @override
   void dispose() {
-    widget.indicatorAnimationController?.removeListener(listener);
+    widget.indicatorAnimationController?.removeListener(indicatorListener);
+    storyImageLoadingController.removeListener(imageLoadingListener);
+
     super.dispose();
   }
 
@@ -349,7 +369,7 @@ class _StoryPageFrameState extends State<_StoryPageFrame>
           child: widget.itemBuilder(
             context,
             widget.pageIndex,
-            context.watch<StoryStackController>().value,
+            context.watch<_StoryStackController>().value,
           ),
         ),
         Container(
@@ -366,7 +386,7 @@ class _StoryPageFrameState extends State<_StoryPageFrame>
                 )
               : null,
         ),
-        Indicators(
+        _Indicators(
           indicatorHeight: widget.indicatorHeight,
           storyLength: widget.storyLength,
           animationController: animationController,
@@ -375,15 +395,16 @@ class _StoryPageFrameState extends State<_StoryPageFrame>
           padding: widget.indicatorPadding,
           indicatorVisitedColor: widget.indicatorVisitedColor,
           indicatorUnvisitedColor: widget.indicatorUnvisitedColor,
+          indicatorAnimationController: widget.indicatorAnimationController,
         ),
-        Gestures(
+        _Gestures(
           animationController: animationController,
         ),
         Positioned.fill(
           child: widget.gestureItemBuilder?.call(
                 context,
                 widget.pageIndex,
-                context.watch<StoryStackController>().value,
+                context.watch<_StoryStackController>().value,
               ) ??
               const SizedBox.shrink(),
         ),
@@ -393,4 +414,231 @@ class _StoryPageFrameState extends State<_StoryPageFrame>
 
   @override
   bool get wantKeepAlive => true;
+}
+
+class _Gestures extends StatelessWidget {
+  const _Gestures({
+    Key? key,
+    required this.animationController,
+  }) : super(key: key);
+
+  final AnimationController? animationController;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child: Container(
+            color: Colors.transparent,
+            child: GestureDetector(
+              onTap: () {
+                animationController!.forward(from: 0);
+                context.read<_StoryStackController>().decrement();
+              },
+              onLongPress: () {
+                animationController!.stop();
+              },
+              onLongPressUp: () {
+                if (storyImageLoadingController.value !=
+                    StoryImageLoadingState.loading) {
+                  animationController!.forward();
+                }
+              },
+            ),
+          ),
+        ),
+        Expanded(
+          child: Container(
+            color: Colors.transparent,
+            child: GestureDetector(
+              onTap: () {
+                context.read<_StoryStackController>().increment(
+                      restartAnimation: () =>
+                          animationController!.forward(from: 0),
+                      completeAnimation: () => animationController!.value = 1,
+                    );
+              },
+              onLongPress: () {
+                animationController!.stop();
+              },
+              onLongPressUp: () {
+                if (storyImageLoadingController.value !=
+                    StoryImageLoadingState.loading) {
+                  animationController!.forward();
+                }
+              },
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _Indicators extends StatefulWidget {
+  const _Indicators({
+    Key? key,
+    required this.animationController,
+    required this.storyLength,
+    required this.isCurrentPage,
+    required this.isPaging,
+    required this.padding,
+    required this.indicatorUnvisitedColor,
+    required this.indicatorVisitedColor,
+    required this.indicatorHeight,
+    required this.indicatorAnimationController,
+  }) : super(key: key);
+  final int storyLength;
+  final AnimationController? animationController;
+  final EdgeInsetsGeometry padding;
+  final bool isCurrentPage;
+  final bool isPaging;
+  final Color indicatorVisitedColor;
+  final Color indicatorUnvisitedColor;
+  final double indicatorHeight;
+  final ValueNotifier<IndicatorAnimationCommand>? indicatorAnimationController;
+
+  @override
+  _IndicatorsState createState() => _IndicatorsState();
+}
+
+class _IndicatorsState extends State<_Indicators> {
+  late Animation<double> indicatorAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    if (storyImageLoadingController.value != StoryImageLoadingState.loading) {
+      widget.animationController!.forward();
+    }
+    indicatorAnimation =
+        Tween(begin: 0.0, end: 1.0).animate(widget.animationController!)
+          ..addListener(() {
+            setState(() {});
+          });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final int currentStoryIndex = context.watch<_StoryStackController>().value;
+    final bool isStoryEnded = context.watch<_StoryLimitController>().value;
+    if (!widget.isCurrentPage && widget.isPaging) {
+      widget.animationController!.stop();
+    }
+    if (!widget.isCurrentPage &&
+        !widget.isPaging &&
+        widget.animationController!.value != 0) {
+      widget.animationController!.value = 0;
+    }
+    if (widget.isCurrentPage &&
+        !widget.animationController!.isAnimating &&
+        !isStoryEnded &&
+        storyImageLoadingController.value != StoryImageLoadingState.loading) {
+      widget.animationController!.forward(from: 0);
+    }
+    return Padding(
+      padding: widget.padding,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: List.generate(
+          widget.storyLength,
+          (index) => _Indicator(
+            index: index,
+            indicatorHeight: widget.indicatorHeight,
+            value: (index == currentStoryIndex)
+                ? indicatorAnimation.value
+                : (index > currentStoryIndex)
+                    ? 0
+                    : 1,
+            indicatorVisitedColor: widget.indicatorVisitedColor,
+            indicatorUnvisitedColor: widget.indicatorUnvisitedColor,
+          ),
+        ),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    widget.animationController!.dispose();
+  }
+}
+
+class _Indicator extends StatelessWidget {
+  const _Indicator({
+    Key? key,
+    required this.index,
+    required this.value,
+    required this.indicatorVisitedColor,
+    required this.indicatorUnvisitedColor,
+    required this.indicatorHeight,
+  }) : super(key: key);
+  final int index;
+  final double value;
+  final Color indicatorVisitedColor;
+  final Color indicatorUnvisitedColor;
+  final double indicatorHeight;
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Padding(
+        padding: EdgeInsets.only(left: (index == 0) ? 0 : 4),
+        child: LinearProgressIndicator(
+          value: value,
+          backgroundColor: indicatorUnvisitedColor,
+          valueColor: AlwaysStoppedAnimation<Color>(indicatorVisitedColor),
+          minHeight: indicatorHeight,
+        ),
+      ),
+    );
+  }
+}
+
+/// Notify current stack index
+class _StoryStackController extends ValueNotifier<int> {
+  _StoryStackController({
+    required this.storyLength,
+    required this.onPageForward,
+    required this.onPageBack,
+    initialStoryIndex = 0,
+  }) : super(initialStoryIndex);
+  final int storyLength;
+  final VoidCallback onPageForward;
+  final VoidCallback onPageBack;
+
+  int get limitIndex => storyLength - 1;
+
+  void increment(
+      {VoidCallback? restartAnimation, VoidCallback? completeAnimation}) {
+    if (value == limitIndex) {
+      completeAnimation?.call();
+      onPageForward();
+    } else {
+      value++;
+      restartAnimation?.call();
+    }
+  }
+
+  void decrement() {
+    if (value == 0) {
+      onPageBack();
+    } else {
+      value--;
+    }
+  }
+}
+
+class _StoryLimitController extends ValueNotifier<bool> {
+  _StoryLimitController() : super(false);
+
+  void onPageLimitReached(VoidCallback? callback) {
+    if (!value) {
+      callback?.call();
+      value = true;
+    }
+  }
 }
