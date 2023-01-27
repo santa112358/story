@@ -140,13 +140,6 @@ class _StoryPageState extends State<StoryPage> {
                   fit: BoxFit.fitWidth,
                 ),
               ),
-              StoryImage(
-                key: ValueKey(story.imageUrl),
-                imageProvider: NetworkImage(
-                  story.imageUrl,
-                ),
-                fit: BoxFit.fitWidth,
-              ),
               Padding(
                 padding: const EdgeInsets.only(top: 44, left: 8),
                 child: Row(
