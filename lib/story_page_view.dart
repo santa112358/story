@@ -445,6 +445,15 @@ class _Gestures extends StatelessWidget {
                   animationController!.forward();
                 }
               },
+              onLongPress: () {
+                animationController!.stop();
+              },
+              onLongPressUp: () {
+                if (storyImageLoadingController.value !=
+                    StoryImageLoadingState.loading) {
+                  animationController!.forward();
+                }
+              },
             ),
           ),
         ),
@@ -463,6 +472,15 @@ class _Gestures extends StatelessWidget {
                 animationController!.stop();
               },
               onTapUp: (_) {
+                if (storyImageLoadingController.value !=
+                    StoryImageLoadingState.loading) {
+                  animationController!.forward();
+                }
+              },
+              onLongPress: () {
+                animationController!.stop();
+              },
+              onLongPressUp: () {
                 if (storyImageLoadingController.value !=
                     StoryImageLoadingState.loading) {
                   animationController!.forward();
