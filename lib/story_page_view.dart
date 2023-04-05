@@ -459,10 +459,10 @@ class _Gestures extends StatelessWidget {
                       completeAnimation: () => animationController!.value = 1,
                     );
               },
-              onLongPress: () {
+              onTapDown: (_) {
                 animationController!.stop();
               },
-              onLongPressUp: () {
+              onTapUp: (_) {
                 if (storyImageLoadingController.value !=
                     StoryImageLoadingState.loading) {
                   animationController!.forward();
