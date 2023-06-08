@@ -63,7 +63,17 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "dmitry-kotorov",
+      "name": "dmitry-kotorov",
+      "avatar_url": "https://avatars.githubusercontent.com/u/50499930?v=4",
+      "profile": "https://github.com/dmitry-kotorov",
+      "contributions": [
+        "code"
+      ]
     }
   ],
-  "contributorsPerLine": 7
+  "contributorsPerLine": 7,
+  "commitType": "docs"
 }
