@@ -1,3 +1,6 @@
+## [1.1.0]
+- Added pause on onTapDown to mimic Instagram stories behaviour
+
 ## [1.0.0+1]
 - Fixed dependency version
 
