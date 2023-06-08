@@ -436,6 +436,15 @@ class _Gestures extends StatelessWidget {
                 animationController!.forward(from: 0);
                 context.read<_StoryStackController>().decrement();
               },
+              onTapDown: (_) {
+                animationController!.stop();
+              },
+              onTapUp: (_) {
+                if (storyImageLoadingController.value !=
+                    StoryImageLoadingState.loading) {
+                  animationController!.forward();
+                }
+              },
               onLongPress: () {
                 animationController!.stop();
               },
@@ -458,6 +467,15 @@ class _Gestures extends StatelessWidget {
                           animationController!.forward(from: 0),
                       completeAnimation: () => animationController!.value = 1,
                     );
+              },
+              onTapDown: (_) {
+                animationController!.stop();
+              },
+              onTapUp: (_) {
+                if (storyImageLoadingController.value !=
+                    StoryImageLoadingState.loading) {
+                  animationController!.forward();
+                }
               },
               onLongPress: () {
                 animationController!.stop();
