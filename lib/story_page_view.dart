@@ -37,6 +37,7 @@ class StoryPageView extends StatefulWidget {
     this.indicatorVisitedColor = Colors.white,
     this.indicatorUnvisitedColor = Colors.grey,
     this.indicatorHeight = 2,
+    this.indicatorRadius = 10,
     this.showShadow = false,
   }) : super(key: key);
 
@@ -85,6 +86,9 @@ class StoryPageView extends StatefulWidget {
 
   /// Width of indicator
   final double indicatorHeight;
+
+  /// radius of indicator
+  final double indicatorRadius;
 
   /// Whether to show shadow near indicator
   final bool showShadow;
@@ -143,6 +147,7 @@ class _StoryPageViewState extends State<StoryPageView> {
                 _StoryPageBuilder.wrapped(
                   showShadow: widget.showShadow,
                   indicatorHeight: widget.indicatorHeight,
+                  indicatorRadius: widget.indicatorRadius,
                   pageLength: widget.pageLength,
                   storyLength: widget.storyLength(index),
                   initialStoryIndex: widget.initialStoryIndex?.call(index) ?? 0,
@@ -198,6 +203,7 @@ class _StoryPageBuilder extends StatefulWidget {
     required this.indicatorUnvisitedColor,
     required this.indicatorVisitedColor,
     required this.indicatorHeight,
+    required this.indicatorRadius,
     required this.showShadow,
   }) : super(key: key);
   final int storyLength;
@@ -213,6 +219,7 @@ class _StoryPageBuilder extends StatefulWidget {
   final Color indicatorVisitedColor;
   final Color indicatorUnvisitedColor;
   final double indicatorHeight;
+  final double indicatorRadius;
   final bool showShadow;
 
   static Widget wrapped({
@@ -233,6 +240,7 @@ class _StoryPageBuilder extends StatefulWidget {
     required Color indicatorVisitedColor,
     required Color indicatorUnvisitedColor,
     required double indicatorHeight,
+    required double indicatorRadius,
     required bool showShadow,
   }) {
     return MultiProvider(
@@ -276,6 +284,7 @@ class _StoryPageBuilder extends StatefulWidget {
         indicatorVisitedColor: indicatorVisitedColor,
         indicatorUnvisitedColor: indicatorUnvisitedColor,
         indicatorHeight: indicatorHeight,
+        indicatorRadius: indicatorRadius,
       ),
     );
   }
@@ -388,6 +397,7 @@ class _StoryPageBuilderState extends State<_StoryPageBuilder>
         ),
         _Indicators(
           indicatorHeight: widget.indicatorHeight,
+          indicatorRadius: widget.indicatorRadius,
           storyLength: widget.storyLength,
           animationController: animationController,
           isCurrentPage: widget.isCurrentPage,
@@ -505,6 +515,7 @@ class _Indicators extends StatefulWidget {
     required this.indicatorUnvisitedColor,
     required this.indicatorVisitedColor,
     required this.indicatorHeight,
+    required this.indicatorRadius,
     required this.indicatorAnimationController,
   }) : super(key: key);
   final int storyLength;
@@ -515,6 +526,7 @@ class _Indicators extends StatefulWidget {
   final Color indicatorVisitedColor;
   final Color indicatorUnvisitedColor;
   final double indicatorHeight;
+  final double indicatorRadius;
   final ValueNotifier<IndicatorAnimationCommand>? indicatorAnimationController;
 
   @override
@@ -565,6 +577,7 @@ class _IndicatorsState extends State<_Indicators> {
           (index) => _Indicator(
             index: index,
             indicatorHeight: widget.indicatorHeight,
+            indicatorRadius: widget.indicatorRadius,
             value: (index == currentStoryIndex)
                 ? indicatorAnimation.value
                 : (index > currentStoryIndex)
@@ -593,23 +606,28 @@ class _Indicator extends StatelessWidget {
     required this.indicatorVisitedColor,
     required this.indicatorUnvisitedColor,
     required this.indicatorHeight,
+    required this.indicatorRadius,
   }) : super(key: key);
   final int index;
   final double value;
   final Color indicatorVisitedColor;
   final Color indicatorUnvisitedColor;
   final double indicatorHeight;
+  final double indicatorRadius;
 
   @override
   Widget build(BuildContext context) {
     return Expanded(
       child: Padding(
         padding: EdgeInsets.only(left: (index == 0) ? 0 : 4),
-        child: LinearProgressIndicator(
-          value: value,
-          backgroundColor: indicatorUnvisitedColor,
-          valueColor: AlwaysStoppedAnimation<Color>(indicatorVisitedColor),
-          minHeight: indicatorHeight,
+        child: ClipRRect(
+          borderRadius: BorderRadius.all(Radius.circular(indicatorRadius)),
+          child: LinearProgressIndicator(
+            value: value,
+            backgroundColor: indicatorUnvisitedColor,
+            valueColor: AlwaysStoppedAnimation<Color>(indicatorVisitedColor),
+            minHeight: indicatorHeight,
+          ),
         ),
       ),
     );
