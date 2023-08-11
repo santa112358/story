@@ -13,6 +13,12 @@ typedef _StoryItemBuilder = Widget Function(
 
 typedef _StoryConfigFunction = int Function(int pageIndex);
 
+typedef _StoryDurationFunction = Duration Function(
+  BuildContext context,
+  int pageIndex,
+  int storyIndex,
+);
+
 enum IndicatorAnimationCommand { pause, resume }
 
 /// PageView to implement story like UI
@@ -28,7 +34,7 @@ class StoryPageView extends StatefulWidget {
     this.initialStoryIndex,
     this.initialPage = 0,
     this.onPageLimitReached,
-    this.indicatorDuration = const Duration(seconds: 5),
+    this.indicatorDuration,
     this.indicatorPadding =
         const EdgeInsets.symmetric(vertical: 32, horizontal: 8),
     this.backgroundColor = Colors.black,
@@ -67,7 +73,7 @@ class StoryPageView extends StatefulWidget {
   final EdgeInsetsGeometry indicatorPadding;
 
   /// duration of [_Indicators]
-  final Duration indicatorDuration;
+  final _StoryDurationFunction? indicatorDuration;
 
   /// Called when the very last story is finished.
   ///
@@ -207,7 +213,7 @@ class _StoryPageBuilder extends StatefulWidget {
   final bool isPaging;
   final _StoryItemBuilder itemBuilder;
   final _StoryItemBuilder? gestureItemBuilder;
-  final Duration indicatorDuration;
+  final _StoryDurationFunction? indicatorDuration;
   final EdgeInsetsGeometry indicatorPadding;
   final ValueNotifier<IndicatorAnimationCommand>? indicatorAnimationController;
   final Color indicatorVisitedColor;
@@ -226,7 +232,7 @@ class _StoryPageBuilder extends StatefulWidget {
     required VoidCallback? onPageLimitReached,
     required _StoryItemBuilder itemBuilder,
     _StoryItemBuilder? gestureItemBuilder,
-    required Duration indicatorDuration,
+    required _StoryDurationFunction? indicatorDuration,
     required EdgeInsetsGeometry indicatorPadding,
     required ValueNotifier<IndicatorAnimationCommand>?
         indicatorAnimationController,
@@ -330,19 +336,35 @@ class _StoryPageBuilderState extends State<_StoryPageBuilder>
         }
       }
     };
-    animationController = AnimationController(
-      vsync: this,
-      duration: widget.indicatorDuration,
-    )..addStatusListener(
+    animationController = AnimationController(vsync: this)
+      ..addStatusListener(
         (status) {
           if (status == AnimationStatus.completed) {
             context.read<_StoryStackController>().increment(
-                restartAnimation: () => animationController.forward(from: 0));
+                restartAnimation: () => animationController
+                  ..duration = (widget.indicatorDuration?.call(
+                        context,
+                        widget.pageIndex,
+                        context.read<_StoryStackController>().value,
+                      ) ??
+                      const Duration(seconds: 5))
+                  ..forward(from: 0));
           }
         },
       );
     widget.indicatorAnimationController?.addListener(indicatorListener);
     storyImageLoadingController.addListener(imageLoadingListener);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    animationController.duration = widget.indicatorDuration?.call(
+          context,
+          widget.pageIndex,
+          context.read<_StoryStackController>().value,
+        ) ??
+        const Duration(seconds: 5);
   }
 
   @override
