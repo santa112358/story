@@ -236,6 +236,7 @@ indicatorAnimationController.value = IndicatorAnimationCommand.resume;
     </tr>
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/rajputsk"><img src="https://avatars.githubusercontent.com/u/25103046?v=4?s=100" width="100px;" alt="sachin kumar rajput"/><br /><sub><b>sachin kumar rajput</b></sub></a><br /><a href="https://github.com/santa112358/story/commits?author=rajputsk" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/mwothman"><img src="https://avatars.githubusercontent.com/u/56353593?v=4?s=100" width="100px;" alt="Mohamed Othman"/><br /><sub><b>Mohamed Othman</b></sub></a><br /><a href="https://github.com/santa112358/story/commits?author=mwothman" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
