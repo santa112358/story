@@ -619,7 +619,7 @@ class _Indicator extends StatelessWidget {
   Widget build(BuildContext context) {
     return Expanded(
       child: Padding(
-        padding: EdgeInsets.only(left: (index == 0) ? 0 : 4),
+        padding: EdgeInsetsDirectional.only(start: (index == 0) ? 0 : 4),
         child: ClipRRect(
           borderRadius: BorderRadius.all(Radius.circular(indicatorRadius)),
           child: LinearProgressIndicator(
