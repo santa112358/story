@@ -11,6 +11,12 @@ typedef _StoryItemBuilder = Widget Function(
   int storyIndex,
 );
 
+typedef _StorySwipeFunction = void Function(
+  BuildContext context,
+  int pageIndex,
+  int storyIndex,
+);
+
 typedef _StoryConfigFunction = int Function(int pageIndex);
 
 enum IndicatorAnimationCommand { pause, resume }
@@ -39,6 +45,9 @@ class StoryPageView extends StatefulWidget {
     this.indicatorHeight = 2,
     this.indicatorRadius = 10,
     this.showShadow = false,
+    this.onSwipeDown,
+    this.onSwipeUp,
+    this.resumeAfterSwipe = true,
   }) : super(key: key);
 
   ///  visited color of [_Indicators]
@@ -92,6 +101,15 @@ class StoryPageView extends StatefulWidget {
 
   /// Whether to show shadow near indicator
   final bool showShadow;
+
+  /// Called when page scrolled down
+  final _StorySwipeFunction? onSwipeDown;
+
+  /// Called when page scrolled up
+  final _StorySwipeFunction? onSwipeUp;
+
+  /// Whether to resume animation after swipe up or down function called
+  final bool resumeAfterSwipe;
 
   /// A stream with [IndicatorAnimationCommand] to force pause or continue inticator animation
   /// Useful when you need to show any popup over the story
@@ -168,6 +186,9 @@ class _StoryPageViewState extends State<StoryPageView> {
                       widget.indicatorAnimationController,
                   indicatorUnvisitedColor: widget.indicatorUnvisitedColor,
                   indicatorVisitedColor: widget.indicatorVisitedColor,
+                  onSwipeDown: widget.onSwipeDown,
+                  onSwipeUp: widget.onSwipeUp,
+                  resumeAfterSwipe: widget.resumeAfterSwipe,
                 ),
                 if (isPaging && !isLeaving)
                   Positioned.fill(
@@ -205,6 +226,9 @@ class _StoryPageBuilder extends StatefulWidget {
     required this.indicatorHeight,
     required this.indicatorRadius,
     required this.showShadow,
+    required this.onSwipeUp,
+    required this.onSwipeDown,
+    required this.resumeAfterSwipe,
   }) : super(key: key);
   final int storyLength;
   final int initialStoryIndex;
@@ -221,6 +245,9 @@ class _StoryPageBuilder extends StatefulWidget {
   final double indicatorHeight;
   final double indicatorRadius;
   final bool showShadow;
+  final _StorySwipeFunction? onSwipeDown;
+  final _StorySwipeFunction? onSwipeUp;
+  final bool resumeAfterSwipe;
 
   static Widget wrapped({
     required int pageIndex,
@@ -242,6 +269,9 @@ class _StoryPageBuilder extends StatefulWidget {
     required double indicatorHeight,
     required double indicatorRadius,
     required bool showShadow,
+    required bool resumeAfterSwipe,
+    _StorySwipeFunction? onSwipeDown,
+    _StorySwipeFunction? onSwipeUp,
   }) {
     return MultiProvider(
       providers: [
@@ -285,6 +315,9 @@ class _StoryPageBuilder extends StatefulWidget {
         indicatorUnvisitedColor: indicatorUnvisitedColor,
         indicatorHeight: indicatorHeight,
         indicatorRadius: indicatorRadius,
+        onSwipeUp: onSwipeUp,
+        onSwipeDown: onSwipeDown,
+        resumeAfterSwipe: resumeAfterSwipe,
       ),
     );
   }
@@ -409,6 +442,11 @@ class _StoryPageBuilderState extends State<_StoryPageBuilder>
         ),
         _Gestures(
           animationController: animationController,
+          onSwipeUp: widget.onSwipeUp,
+          onSwipeDown: widget.onSwipeDown,
+          pageIndex: widget.pageIndex,
+          storyIndex: context.watch<_StoryStackController>().value,
+          resumeAfterSwipe: widget.resumeAfterSwipe,
         ),
         Positioned.fill(
           child: widget.gestureItemBuilder?.call(
@@ -430,12 +468,27 @@ class _Gestures extends StatelessWidget {
   const _Gestures({
     Key? key,
     required this.animationController,
+    required this.pageIndex,
+    required this.storyIndex,
+    required this.resumeAfterSwipe,
+    this.onSwipeUp,
+    this.onSwipeDown,
   }) : super(key: key);
 
   final AnimationController? animationController;
 
+  final _StorySwipeFunction? onSwipeDown;
+  final _StorySwipeFunction? onSwipeUp;
+
+  final int pageIndex;
+  final int storyIndex;
+
+  final bool resumeAfterSwipe;
+
   @override
   Widget build(BuildContext context) {
+    DragStartDetails? panStartDetails;
+    DragUpdateDetails? panUpdateDetails;
     return Row(
       children: [
         Expanded(
@@ -458,6 +511,88 @@ class _Gestures extends StatelessWidget {
               onLongPress: () {
                 animationController!.stop();
               },
+              onPanStart: (details) => panStartDetails = details,
+              onPanUpdate: (details) => panUpdateDetails = details,
+              onPanEnd: (details) {
+                if (panStartDetails == null || panUpdateDetails == null) return;
+                final dx = panUpdateDetails!.globalPosition.dx - panStartDetails!.globalPosition.dx;
+                final dy = panUpdateDetails!.globalPosition.dy - panStartDetails!.globalPosition.dy;
+
+                final panDurationMiliseconds = panUpdateDetails!.sourceTimeStamp!.inMilliseconds - panStartDetails!.sourceTimeStamp!.inMilliseconds;
+
+                final mainDistance, crossDistance, mainVelocity;
+                final isHorizontalMainAxis = dx.abs() > dy.abs();
+
+                if (isHorizontalMainAxis) {
+                  mainDistance = dx.abs();
+                  crossDistance = dy.abs();
+                } else {
+                  mainDistance = dy.abs();
+                  crossDistance = dx.abs();
+                }
+
+                mainVelocity = 1000 * mainDistance / panDurationMiliseconds;
+
+                if (mainDistance < 50) {
+                  if (storyImageLoadingController.value != StoryImageLoadingState.loading) {
+                    animationController!.forward();
+                  }
+                  return;
+                }
+
+                if (crossDistance > 0.75 * mainDistance) {
+                  if (storyImageLoadingController.value != StoryImageLoadingState.loading) {
+                    animationController!.forward();
+                  }
+                  return;
+                }
+
+                if (mainVelocity < 300) {
+                  if (storyImageLoadingController.value != StoryImageLoadingState.loading) {
+                    animationController!.forward();
+                  }
+                  return;
+                }
+                if (isHorizontalMainAxis) {
+                  if (dx > 0) {
+                    context.read<_StoryStackController>().increment(
+                          restartAnimation: () => animationController!.forward(from: 0),
+                          completeAnimation: () => animationController!.value = 1,
+                        );
+                  } else {
+                    animationController!.forward(from: 0);
+                    context.read<_StoryStackController>().decrement();
+                  }
+                } else {
+                  if (dy < 0) {
+                    if (onSwipeUp != null) {
+                      onSwipeUp?.call(context, pageIndex, storyIndex);
+                      if (resumeAfterSwipe) {
+                        if (storyImageLoadingController.value != StoryImageLoadingState.loading) {
+                          animationController!.forward();
+                        }
+                      }
+                    } else {
+                      if (storyImageLoadingController.value != StoryImageLoadingState.loading) {
+                        animationController!.forward();
+                      }
+                    }
+                  } else {
+                    if (onSwipeDown != null) {
+                      onSwipeDown?.call(context, pageIndex, storyIndex);
+                      if (resumeAfterSwipe) {
+                        if (storyImageLoadingController.value != StoryImageLoadingState.loading) {
+                          animationController!.forward();
+                        }
+                      }
+                    } else {
+                      if (storyImageLoadingController.value != StoryImageLoadingState.loading) {
+                        animationController!.forward();
+                      }
+                    }
+                  }
+                }
+              },
               onLongPressUp: () {
                 if (storyImageLoadingController.value !=
                     StoryImageLoadingState.loading) {
@@ -478,8 +613,91 @@ class _Gestures extends StatelessWidget {
                       completeAnimation: () => animationController!.value = 1,
                     );
               },
+              onPanStart: (details) => panStartDetails = details,
+              onPanUpdate: (details) => panUpdateDetails = details,
+              onPanEnd: (details) {
+                if (panStartDetails == null || panUpdateDetails == null) return;
+                final dx = panUpdateDetails!.globalPosition.dx - panStartDetails!.globalPosition.dx;
+                final dy = panUpdateDetails!.globalPosition.dy - panStartDetails!.globalPosition.dy;
+
+                final panDurationMiliseconds = panUpdateDetails!.sourceTimeStamp!.inMilliseconds - panStartDetails!.sourceTimeStamp!.inMilliseconds;
+
+                final mainDistance, crossDistance, mainVelocity;
+                final isHorizontalMainAxis = dx.abs() > dy.abs();
+
+                if (isHorizontalMainAxis) {
+                  mainDistance = dx.abs();
+                  crossDistance = dy.abs();
+                } else {
+                  mainDistance = dy.abs();
+                  crossDistance = dx.abs();
+                }
+
+                mainVelocity = 1000 * mainDistance / panDurationMiliseconds;
+
+                if (mainDistance < 50) {
+                  if (storyImageLoadingController.value != StoryImageLoadingState.loading) {
+                    animationController!.forward();
+                  }
+                  return;
+                }
+
+                if (crossDistance > 0.75 * mainDistance) {
+                  if (storyImageLoadingController.value != StoryImageLoadingState.loading) {
+                    animationController!.forward();
+                  }
+                  return;
+                }
+
+                if (mainVelocity < 300) {
+                  if (storyImageLoadingController.value != StoryImageLoadingState.loading) {
+                    animationController!.forward();
+                  }
+                  return;
+                }
+                if (isHorizontalMainAxis) {
+                  if (dx > 0) {
+                    context.read<_StoryStackController>().increment(
+                          restartAnimation: () => animationController!.forward(from: 0),
+                          completeAnimation: () => animationController!.value = 1,
+                        );
+                  } else {
+                    animationController!.forward(from: 0);
+                    context.read<_StoryStackController>().decrement();
+                  }
+                } else {
+                  if (dy < 0) {
+                    if (onSwipeUp != null) {
+                      onSwipeUp?.call(context, pageIndex, storyIndex);
+                      if (resumeAfterSwipe) {
+                        if (storyImageLoadingController.value != StoryImageLoadingState.loading) {
+                          animationController!.forward();
+                        }
+                      }
+                    } else {
+                      if (storyImageLoadingController.value != StoryImageLoadingState.loading) {
+                        animationController!.forward();
+                      }
+                    }
+                  } else {
+                    if (onSwipeDown != null) {
+                      onSwipeDown?.call(context, pageIndex, storyIndex);
+                      if (resumeAfterSwipe) {
+                        if (storyImageLoadingController.value != StoryImageLoadingState.loading) {
+                          animationController!.forward();
+                        }
+                      }
+                    } else {
+                      if (storyImageLoadingController.value != StoryImageLoadingState.loading) {
+                        animationController!.forward();
+                      }
+                    }
+                  }
+                }
+              },
               onTapDown: (_) {
                 animationController!.stop();
+                panUpdateDetails = null;
               },
               onTapUp: (_) {
                 if (storyImageLoadingController.value !=
