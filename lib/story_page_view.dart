@@ -627,6 +627,7 @@ class _Indicator extends StatelessWidget {
             backgroundColor: indicatorUnvisitedColor,
             valueColor: AlwaysStoppedAnimation<Color>(indicatorVisitedColor),
             minHeight: indicatorHeight,
+            borderRadius: BorderRadius.all(Radius.circular(indicatorRadius)),
           ),
         ),
       ),
