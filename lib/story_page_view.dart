@@ -34,6 +34,7 @@ class StoryPageView extends StatefulWidget {
     this.backgroundColor = Colors.black,
     this.indicatorAnimationController,
     this.onPageChanged,
+    this.onPageOverscroll,
     this.indicatorVisitedColor = Colors.white,
     this.indicatorUnvisitedColor = Colors.grey,
     this.indicatorHeight = 2,
@@ -75,6 +76,11 @@ class StoryPageView extends StatefulWidget {
   /// Functions like "Navigator.pop(context)" is expected.
   final VoidCallback? onPageLimitReached;
 
+  /// Called when the user tries to overscroll the first or last page.
+  ///
+  /// Functions like "Navigator.pop(context)" is expected.
+  final VoidCallback? onPageOverscroll;
+
   /// Called whenever the page in the center of the viewport changes.
   final void Function(int)? onPageChanged;
 
@@ -102,7 +108,7 @@ class StoryPageView extends StatefulWidget {
 }
 
 class _StoryPageViewState extends State<StoryPageView> {
-  PageController? pageController;
+  late PageController pageController;
 
   var currentPageValue;
 
@@ -113,11 +119,31 @@ class _StoryPageViewState extends State<StoryPageView> {
 
     currentPageValue = widget.initialPage.toDouble();
 
-    pageController!.addListener(() {
-      setState(() {
-        currentPageValue = pageController!.page;
-      });
-    });
+    pageController.addListener(pageControllerListener);
+  }
+
+  void pageControllerListener() {
+    final currentPage = pageController.page;
+    final itemCount = widget.pageLength;
+
+    final minScrollExtent = pageController.position.minScrollExtent;
+    final maxScrollExtent = pageController.position.maxScrollExtent;
+
+    if (currentPage == 0 && pageController.position.pixels < minScrollExtent) {
+      widget.onPageOverscroll?.call();
+    } else if (currentPage == itemCount - 1 &&
+        pageController.position.pixels > maxScrollExtent) {
+      widget.onPageOverscroll?.call();
+    }
+
+    setState(() => currentPageValue = pageController.page);
+  }
+
+  @override
+  void dispose() {
+    pageController.removeListener(pageControllerListener);
+    pageController.dispose();
+    super.dispose();
   }
 
   @override
@@ -153,7 +179,7 @@ class _StoryPageViewState extends State<StoryPageView> {
                   initialStoryIndex: widget.initialStoryIndex?.call(index) ?? 0,
                   pageIndex: index,
                   animateToPage: (index) {
-                    pageController!.animateToPage(index,
+                    pageController.animateToPage(index,
                         duration: Duration(milliseconds: 500),
                         curve: Curves.ease);
                   },
@@ -387,7 +413,7 @@ class _StoryPageBuilderState extends State<_StoryPageBuilder>
               ? BoxDecoration(
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
+                      color: Colors.black.withValues(alpha: 0.1),
                       spreadRadius: 10,
                       blurRadius: 20,
                     ),
